@@ -6,6 +6,13 @@ import pickle
 import hashlib
 import re
 
+
+
+class ValidationError(BaseException):
+    pass
+
+
+
 class BaseInterface(object):
     """Abstract validator base interface"""
     
@@ -53,19 +60,27 @@ class All(BaseInterface):
 
     def __call__(self, value):
         for validator in self.validators:
-            if not validator(value):
-                return False
-        return True
+            try:
+                validator(value)
+            except ValidationError:
+                raise
 
 
 class Any(BaseInterface):
     """OR operation for validators"""
 
     def __call__(self, value):
+        first_err = None
         for validator in self.validators:
-            if validator(value):
-                return True
-        return False
+            try:
+                validator(value)
+            except ValidationError, e:
+                if first_err is None:
+                    first_err = e
+            else:
+                return
+        if first_err is not None:
+            raise first_err
 
 
 class Validator(BaseInterface):
@@ -104,14 +119,13 @@ class Number(Validator):
         try:
             value = float(value)
         except ValueError:
-            return False
+            raise ValidationError
         if self.max is not None:
             if not (value <= self.max):
-                return False
+                raise ValidationError
         if self.min is not None:
             if not (value >= self.min):
-                return False
-        return True
+                raise ValidationError
 
 
 class FreeText(Validator):
@@ -124,13 +138,12 @@ class FreeText(Validator):
 
     def __call__(self, value):
         if not isinstance(value, basestring):
-            return False
+            raise ValidationError
         for ignore in self.ignore_chars:
             value = re.sub(ignore, '', value)
         for phrase in self.ban_phrases:
             if re.search(phrase, value) is not None:
-                return False
-        return True
+                raise ValidationError
 
 
 class Equal(Validator):
@@ -141,18 +154,21 @@ class Equal(Validator):
         self.eq_value = eq_value
 
     def __call__(self, value):
-        if (not isinstance(value, basestring)) or (not isinstance(self.eq_value, basestring)):
-            return False
+        if (not isinstance(value, basestring)) or\
+           (not isinstance(self.eq_value, basestring)):
+            raise ValidationError
         if isinstance(value, unicode):
             if isinstance(self.eq_value, unicode):
-                return self.eq_value == value
-            else:
-                return self.eq_value.decode('utf-8') == value
+                if self.eq_value != value:
+                    raise ValidationError
+            elif self.eq_value.decode('utf-8') != value:
+                raise ValidationError
         else:
             if isinstance(self.eq_value, unicode):
-                return self.eq_value == value.decode('utf-8')
-            else:
-                return self.eq_value == value
+                if self.eq_value != value.decode('utf-8'):
+                    raise ValidationError
+            elif self.eq_value != value:
+                raise ValidationError
 
 
 class Regex(Validator):
@@ -177,15 +193,14 @@ class Regex(Validator):
 
     def __call__(self, value):
         if self.regexp is None:
-            return False
+            raise ValidationError
         regex_method = re.match if self.is_match else re.search
         if self.flags is None:
-            if regex_method(self.regexp, value) is not None:
-                return True
+            if regex_method(self.regexp, value) is None:
+                raise ValidationError
         else:
-            if regex_method(self.regexp, value, self.flags) is not None:
-                return True
-        return False
+            if regex_method(self.regexp, value, self.flags) is None:
+                raise ValidationError
 
 
 class AllowType(Validator):
@@ -201,14 +216,14 @@ class AllowType(Validator):
             try:
                 self.test_type(value)
             except TypeError:
-                return False
+                raise ValidationError
             except Exception, e:
                 if callable(self.on_exception):
-                    return self.on_exception(e)
-                return False
-            else:
-                return True
-        return False
+                    self.on_exception(e)
+                else:
+                    raise ValidationError
+        else:
+            raise ValidationError
 
 
 class Prefix(Validator):
@@ -219,7 +234,8 @@ class Prefix(Validator):
 
     def __call__(self, value):
         v = str(value)
-        return v.startswith(self.prefix)
+        if not v.startswith(self.prefix):
+            raise ValidationError
 
 
 class Type(Validator):
@@ -230,7 +246,8 @@ class Type(Validator):
         self.value_type = value_type
 
     def __call__(self, value):
-        return isinstance(value, self.value_type)
+        if not isinstance(value, self.value_type):
+            raise ValidationError
 
 
 class Length(Validator):
@@ -248,11 +265,10 @@ class Length(Validator):
     def __call__(self, value):
         if self.max_length is not None:
             if not (len(value) <= int(self.max_length)):
-                return False
+                raise ValidationError
         if self.min_length >= 0:
             if not (len(value) >= int(self.min_length)):
-                return False
-        return True
+                raise ValidationError
 
 
 
@@ -294,5 +310,5 @@ class Flag(Any):
                                    Equal(u'false'), Equal(u'f'), Equal(u'0'))
 
     def __call__(self, value):
-        return super(Flag, self).__call__(value.lower())
+        super(Flag, self).__call__(value.lower())
 

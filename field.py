@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-
+from validator import ValidationError
 from converter import ConversionError, unicode_converter
 
 
@@ -11,8 +11,6 @@ class RequiredError(BaseException):
 class MissingDefault(BaseException):
     pass
 
-class ValidationError(BaseException):
-    pass
 
 
 class BaseField(object):
@@ -64,8 +62,10 @@ class BaseField(object):
             ValueError: value is missing, but default-value is available.
         """
         if value != self.empty_case:
-            if not self.validators(value):
-                raise ValidationError
+            try:
+                self.validators(value)
+            except ValidationError:
+                raise
         elif self.default is None:
             # value and default-value are missing
             raise MissingDefault
