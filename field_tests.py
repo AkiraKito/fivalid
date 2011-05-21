@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from field import *
-from validator import *
+from fields import *
+from validators import *
 
 
 

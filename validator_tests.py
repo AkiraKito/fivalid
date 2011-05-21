@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from validator import *
+from validators import *
 
 
 def err(validator, value):

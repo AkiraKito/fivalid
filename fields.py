@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from validator import ValidationError
-from converter import ConversionError, unicode_converter
+from validators import ValidationError
+from converters import ConversionError, unicode_converter
 
 
 class RequiredError(BaseException):

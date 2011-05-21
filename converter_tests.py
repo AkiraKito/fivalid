@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from converter import *
+from converters import *
 
 
 def unicode_converter_test():
