@@ -18,8 +18,8 @@ class BaseField(object):
     validators = None
     converter = unicode_converter
     
-    def __init__(self, default=None, required=False, empty_case=None, validators=None):
-        self.empty_case = empty_case
+    def __init__(self, default=None, required=False, empty_value=None, validators=None):
+        self.empty_value = empty_value
         if validators is not None:
             self.validators = validators
         self.required = required 
@@ -61,7 +61,7 @@ class BaseField(object):
             MissingDefault: value and default-value are missing.
             ValueError: value is missing, but default-value is available.
         """
-        if value != self.empty_case:
+        if value != self.empty_value:
             try:
                 self.validators(value)
             except ValidationError:
