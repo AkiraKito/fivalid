@@ -23,15 +23,17 @@ class BaseField(object):
         if validators is not None:
             self.validators = validators
         self.required = required 
-        self.default = ''
-        try:
-            self.apply_validators(default)
-        except (MissingDefault, ValueError):
-            pass
-        except ValidationError:
-            raise
-        else:
+        if default is None:
             self.default = default
+        else:
+            try:
+                self.apply_validators(default)
+            except (MissingDefault, ValueError):
+                pass
+            except ValidationError:
+                raise
+            else:
+                self.default = default
 
     def __call__(self, value):
         """validate the value
@@ -66,13 +68,14 @@ class BaseField(object):
                 self.validators(value)
             except ValidationError:
                 raise
-        elif self.default is None:
-            # value and default-value are missing
-            raise MissingDefault
         else:
-            # value is missing, but default_value is available
-            raise ValueError
-
+            # value is empty
+            if getattr(self, 'default', None) is None:  # default-value was changed in init?
+                # value and default-value are missing
+                raise MissingDefault
+            else:
+                # value is missing, but default_value is available
+                raise ValueError
 
 
 
