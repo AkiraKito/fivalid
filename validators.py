@@ -12,7 +12,6 @@ class ValidationError(BaseException):
     pass
 
 
-
 class BaseInterface(object):
     """Abstract validator base interface"""
     
@@ -101,8 +100,6 @@ class Validator(BaseInterface):
 
 
 
-# validator's children
-
 class Number(Validator):
     """Number validator
     args:
@@ -118,14 +115,14 @@ class Number(Validator):
     def __call__(self, value):
         try:
             value = float(value)
-        except ValueError:
-            raise ValidationError
+        except ValueError, e:
+            raise ValidationError(e)
         if self.max is not None:
             if not (value <= self.max):
-                raise ValidationError
+                raise ValidationError('over max')
         if self.min is not None:
             if not (value >= self.min):
-                raise ValidationError
+                raise ValidationError('less than min')
 
 
 class FreeText(Validator):
@@ -138,12 +135,12 @@ class FreeText(Validator):
 
     def __call__(self, value):
         if not isinstance(value, basestring):
-            raise ValidationError
+            raise ValidationError('not string')
         for ignore in self.ignore_chars:
             value = re.sub(ignore, '', value)
         for phrase in self.ban_phrases:
             if re.search(phrase, value) is not None:
-                raise ValidationError
+                raise ValidationError('ban phrase found')
 
 
 class Equal(Validator):
@@ -154,21 +151,20 @@ class Equal(Validator):
         self.eq_value = eq_value
 
     def __call__(self, value):
-        if (not isinstance(value, basestring)) or\
-           (not isinstance(self.eq_value, basestring)):
-            raise ValidationError
+        if (not isinstance(value, basestring)) or (not isinstance(self.eq_value, basestring)):
+            raise ValidationError('not string')
         if isinstance(value, unicode):
             if isinstance(self.eq_value, unicode):
                 if self.eq_value != value:
-                    raise ValidationError
+                    raise ValidationError('not equal')
             elif self.eq_value.decode('utf-8') != value:
-                raise ValidationError
+                raise ValidationError('not equal')
         else:
             if isinstance(self.eq_value, unicode):
                 if self.eq_value != value.decode('utf-8'):
-                    raise ValidationError
+                    raise ValidationError('not equal')
             elif self.eq_value != value:
-                raise ValidationError
+                raise ValidationError('not equal')
 
 
 class Regex(Validator):
@@ -193,14 +189,14 @@ class Regex(Validator):
 
     def __call__(self, value):
         if self.regexp is None:
-            raise ValidationError
+            raise ValidationError('missing regexp')
         regex_method = re.match if self.is_match else re.search
         if self.flags is None:
             if regex_method(self.regexp, value) is None:
-                raise ValidationError
+                raise ValidationError('not found')
         else:
             if regex_method(self.regexp, value, self.flags) is None:
-                raise ValidationError
+                raise ValidationError('not found')
 
 
 class AllowType(Validator):
@@ -216,14 +212,14 @@ class AllowType(Validator):
             try:
                 self.test_type(value)
             except TypeError:
-                raise ValidationError
+                raise ValidationError('not allowed')
             except Exception, e:
                 if callable(self.on_exception):
                     self.on_exception(e)
                 else:
-                    raise ValidationError
+                    raise ValidationError('not allowed')
         else:
-            raise ValidationError
+            raise ValidationError('type is invalid')
 
 
 class Prefix(Validator):
@@ -235,7 +231,7 @@ class Prefix(Validator):
     def __call__(self, value):
         v = str(value)
         if not v.startswith(self.prefix):
-            raise ValidationError
+            raise ValidationError('not found')
 
 
 class Type(Validator):
@@ -247,7 +243,7 @@ class Type(Validator):
 
     def __call__(self, value):
         if not isinstance(value, self.value_type):
-            raise ValidationError
+            raise ValidationError('not same type')
 
 
 class Length(Validator):
@@ -265,10 +261,10 @@ class Length(Validator):
     def __call__(self, value):
         if self.max_length is not None:
             if not (len(value) <= int(self.max_length)):
-                raise ValidationError
+                raise ValidationError('over max length')
         if self.min_length >= 0:
             if not (len(value) >= int(self.min_length)):
-                raise ValidationError
+                raise ValidationError('less than min length')
 
 
 
@@ -311,4 +307,5 @@ class Flag(Any):
 
     def __call__(self, value):
         super(Flag, self).__call__(value.lower())
+
 
