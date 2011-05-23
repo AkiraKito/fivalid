@@ -190,6 +190,8 @@ class Regex(Validator):
     def __call__(self, value):
         if self.regexp is None:
             raise ValidationError('missing regexp')
+        if not isinstance(value, basestring):
+            raise ValidationError('value is invalid')
         regex_method = re.match if self.is_match else re.search
         if self.flags is None:
             if regex_method(self.regexp, value) is None:
