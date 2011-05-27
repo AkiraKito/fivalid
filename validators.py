@@ -12,7 +12,7 @@ class ValidationError(BaseException):
     pass
 
 
-class BaseInterface(object):
+class ValidatorBaseInterface(object):
     """Abstract validator base interface"""
     
     def __init__(self, *validators):
@@ -22,7 +22,7 @@ class BaseInterface(object):
             pickle.dumps(self.validators, pickle.HIGHEST_PROTOCOL)).digest()
 
     def __call__(self, value):
-        raise NotImplementedError
+        self.validate(value)
 
     def __eq__(self, other):
         if self.ident == other.ident:
@@ -36,8 +36,11 @@ class BaseInterface(object):
     def ident(self):
         return self.__hash
 
+    def validate(self, value):
+        raise NotImplementedError
+
     def add(self, other):
-        if isinstance(other, BaseInterface):
+        if isinstance(other, ValidatorBaseInterface):
             try:
                 self.validators.append(other)
             except AttributeError:
@@ -54,10 +57,10 @@ class BaseInterface(object):
             raise
 
 
-class All(BaseInterface):
+class All(ValidatorBaseInterface):
     """AND operation for validators"""
 
-    def __call__(self, value):
+    def validate(self, value):
         for validator in self.validators:
             try:
                 validator(value)
@@ -65,10 +68,10 @@ class All(BaseInterface):
                 raise
 
 
-class Any(BaseInterface):
+class Any(ValidatorBaseInterface):
     """OR operation for validators"""
 
-    def __call__(self, value):
+    def validate(self, value):
         first_err = None
         for validator in self.validators:
             try:
@@ -82,7 +85,7 @@ class Any(BaseInterface):
             raise first_err
 
 
-class Validator(BaseInterface):
+class Validator(ValidatorBaseInterface):
     """Validator base class"""
 
     def __init__(self, *args, **kwargs):
@@ -112,7 +115,7 @@ class Number(Validator):
         self.min = min
         self.max = max
 
-    def __call__(self, value):
+    def validate(self, value):
         try:
             value = float(value)
         except ValueError, e:
@@ -133,7 +136,7 @@ class FreeText(Validator):
         self.ban_phrases = list(ban_phrases) if ban_phrases is not None else []
         self.ignore_chars = list(ignore_chars) if ignore_chars is not None else []
 
-    def __call__(self, value):
+    def validate(self, value):
         if not isinstance(value, basestring):
             raise ValidationError('not string')
         for ignore in self.ignore_chars:
@@ -150,7 +153,7 @@ class Equal(Validator):
         super(Equal, self).__init__(eq_value)
         self.eq_value = eq_value
 
-    def __call__(self, value):
+    def validate(self, value):
         if (not isinstance(value, basestring)) or (not isinstance(self.eq_value, basestring)):
             raise ValidationError('not string')
         if isinstance(value, unicode):
@@ -187,7 +190,7 @@ class Regex(Validator):
         else:
             self.flags = None
 
-    def __call__(self, value):
+    def validate(self, value):
         if self.regexp is None:
             raise ValidationError('missing regexp')
         if not isinstance(value, basestring):
@@ -209,7 +212,7 @@ class AllowType(Validator):
         self.test_type = test_type
         self.on_exception = on_exception
 
-    def __call__(self, value):
+    def validate(self, value):
         if callable(self.test_type):
             try:
                 self.test_type(value)
@@ -230,7 +233,7 @@ class Prefix(Validator):
         self.prefix = str(prefix)
         super(Prefix, self).__init__(prefix)
 
-    def __call__(self, value):
+    def validate(self, value):
         v = str(value)
         if not v.startswith(self.prefix):
             raise ValidationError('not found')
@@ -243,7 +246,7 @@ class Type(Validator):
         super(Type, self).__init__(value_type)
         self.value_type = value_type
 
-    def __call__(self, value):
+    def validate(self, value):
         if not isinstance(value, self.value_type):
             raise ValidationError('not same type')
 
@@ -260,7 +263,7 @@ class Length(Validator):
         self.max_length = max
         self.min_length = min if min >= 0 else 0
 
-    def __call__(self, value):
+    def validate(self, value):
         if self.max_length is not None:
             if not (len(value) <= int(self.max_length)):
                 raise ValidationError('over max length')
@@ -307,7 +310,7 @@ class Flag(Any):
         super(Flag, self).__init__(Equal(u'true'), Equal(u't'), Equal(u'1'),
                                    Equal(u'false'), Equal(u'f'), Equal(u'0'))
 
-    def __call__(self, value):
-        super(Flag, self).__call__(value.lower())
+    def validate(self, value):
+        super(Flag, self).validate(value.lower())
 
 
