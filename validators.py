@@ -13,7 +13,13 @@ class ValidationError(BaseException):
 
 
 class ValidatorBaseInterface(object):
-    """Abstract validator base interface"""
+    """Abstract validator base interface.
+    
+    `validators`
+        Instances of some ValidatorBaseInterface's subclass.
+        
+        This argument is tuple.
+    """
     
     def __init__(self, *validators):
         self.validators = list(validators)
@@ -34,12 +40,21 @@ class ValidatorBaseInterface(object):
 
     @property
     def ident(self):
+        """Identifier of instance."""
         return self.__hash
 
     def validate(self, value):
+        """Do validate.
+        
+        :param value: Validatee value.
+        """
         raise NotImplementedError
 
     def add(self, other):
+        """Add new validator(s).
+        :param other: Other validator.
+        """
+
         if isinstance(other, ValidatorBaseInterface):
             try:
                 self.validators.append(other)
@@ -49,6 +64,10 @@ class ValidatorBaseInterface(object):
             raise TypeError
 
     def remove(self, other):
+        """Remove a validator.
+        :param other: Remove target.
+        """
+        
         try:
             self.validators.remove(other)
         except ValueError:
@@ -58,7 +77,7 @@ class ValidatorBaseInterface(object):
 
 
 class All(ValidatorBaseInterface):
-    """AND operation for validators"""
+    """AND operation for validators."""
 
     def validate(self, value):
         for validator in self.validators:
@@ -69,7 +88,7 @@ class All(ValidatorBaseInterface):
 
 
 class Any(ValidatorBaseInterface):
-    """OR operation for validators"""
+    """OR operation for validators."""
 
     def validate(self, value):
         first_err = None
@@ -86,7 +105,11 @@ class Any(ValidatorBaseInterface):
 
 
 class Validator(ValidatorBaseInterface):
-    """Validator base class"""
+    """Validator base class.
+    
+    inherit tips:
+        call Validator.__init__() with *ALL arguments*.
+    """
 
     def __init__(self, *args, **kwargs):
         self.__hash = hashlib.sha1(
@@ -104,10 +127,12 @@ class Validator(ValidatorBaseInterface):
 
 
 class Number(Validator):
-    """Number validator
-    args:
-        min: min of valid value.
-        max: max of valid value.
+    """Number validator.
+
+    `min`
+        min of valid value.
+    `max`
+        max of valid value.
     """
 
     def __init__(self, min=None, max=None):
@@ -116,6 +141,11 @@ class Number(Validator):
         self.max = max
 
     def validate(self, value):
+        """Validate the value.
+
+        :param value: String of a number.
+        :raise ValidationError: value is invalid.
+        """
         try:
             value = float(value)
         except ValueError, e:
@@ -129,7 +159,16 @@ class Number(Validator):
 
 
 class FreeText(Validator):
-    """Free text validator"""
+    """Free text validator.
+    
+    `ban_phrases`
+        List of ban phrase.
+    
+    `ignore_chars`
+        List of ignore string.
+        If ignore string is found in value, erase from the value
+        before check ban phrases.
+    """
 
     def __init__(self, ban_phrases=None, ignore_chars=None):
         super(FreeText, self).__init__(ban_phrases, ignore_chars)
@@ -147,14 +186,19 @@ class FreeText(Validator):
 
 
 class Equal(Validator):
-    """Equal value validator"""
+    """Equal value validator.
+    
+    `eq_value`
+       Value is equal to `ea_value`, value is "valid".
+    """
 
     def __init__(self, eq_value):
         super(Equal, self).__init__(eq_value)
         self.eq_value = eq_value
 
     def validate(self, value):
-        if (not isinstance(value, basestring)) or (not isinstance(self.eq_value, basestring)):
+        if (not isinstance(value, basestring)) or \
+                (not isinstance(self.eq_value, basestring)):
             raise ValidationError('not string')
         if isinstance(value, unicode):
             if isinstance(self.eq_value, unicode):
@@ -171,7 +215,26 @@ class Equal(Validator):
 
 
 class Regex(Validator):
-    """Value validation by regexp"""
+    """Value validation by regexp.
+    
+    `regexp`
+        Regular expression.
+    
+    `is_match`
+        If True, use :func:`re.match`.
+        Otherwise use :func:`re.search`.
+    
+    `flags`
+        Sequence of flags.
+        Acceptable types are: list, tuple, set, frozenset, basestring
+        
+        * "i": :data:`re.IGNORECASE`
+        * "l": :data:`re.LOCALE`
+        * "m": :data:`re.MULTILINE`
+        * "s": :data:`re.DOTALL`
+        * "u": :data:`re.UNICODE`
+        * "x": :data:`re.VERBOSE`
+    """
 
     def __init__(self, regexp, is_match=True, flags=None):
         if isinstance(regexp, basestring):
@@ -205,7 +268,16 @@ class Regex(Validator):
 
 
 class AllowType(Validator):
-    """Is TYPE allowed the value?"""
+    """Is TYPE allowed the value?
+    
+    `test_type`
+        Callable.
+        If raise exception when call this, value is "invalid".
+    
+    `on_exception`
+        Exception callback.
+        When call occurred exception by `test_type`.
+    """
 
     def __init__(self, test_type, on_exception=None):
         super(AllowType, self).__init__(test_type)
@@ -228,6 +300,11 @@ class AllowType(Validator):
 
 
 class Prefix(Validator):
+    """Prefix validator.
+    
+    `prefix`
+        If value that starts from `prefix`, evaluate the value as "valid".
+    """
 
     def __init__(self, prefix):
         self.prefix = str(prefix)
@@ -240,7 +317,11 @@ class Prefix(Validator):
 
 
 class Type(Validator):
-    """Value type validator"""
+    """Value type validator.
+    
+    `value_type`
+        Expected type of the value.
+    """
 
     def __init__(self, value_type):
         super(Type, self).__init__(value_type)
@@ -252,10 +333,12 @@ class Type(Validator):
 
 
 class Length(Validator):
-    """Limit length
-    args:
-        max: max length.
-        min: min length.
+    """Limit length.
+    
+    `max`
+        max length.
+    `min`
+        min length.
     """
 
     def __init__(self, min=0, max=None):
@@ -277,7 +360,10 @@ class Length(Validator):
 # derivative
 
 class OnelinerText(FreeText):
-    """Free text without linefeed code"""
+    """Free text without linefeed code.
+    
+    Arguments are the same as :class:`~validators.FreeText`.
+    """
 
     def __init__(self, ban_phrases=None, ignore_chars=None):
         ban = [u'\n']
@@ -287,24 +373,33 @@ class OnelinerText(FreeText):
 
 
 class String(Type):
+    """String type only."""
 
     def __init__(self):
         super(String, self).__init__(basestring)
 
 
 class Int(Type):
+    """Int type only."""
 
     def __init__(self):
         super(Int, self).__init__(int)
 
 
 class SortOrder(Any):
+    """Sort order validator.
+    
+    Acceptable value:
+        asc: ascending order.
+        desc: descending order.
+    """
     
     def __init__(self):
         super(SortOrder, self).__init__(Equal('asc'), Equal('desc')) 
 
 
 class Flag(Any):
+    """Flag validator."""
 
     def __init__(self):
         super(Flag, self).__init__(Equal(u'true'), Equal(u't'), Equal(u'1'),

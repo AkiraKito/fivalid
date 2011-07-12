@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from converters import *
+from ..converters import (
+    ConversionError,
+    unicode_converter,
+    float_converter,
+    int_converter,
+    truthvalue_converter,
+    colon_separated_converter
+)
 
 
 def unicode_converter_test():

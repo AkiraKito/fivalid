@@ -14,11 +14,48 @@ class MissingDefault(BaseException):
 
 
 class BaseField(object):
+    """Basic field validators and converter set.
+    
+    usage:
+        >>> field = BaseField(required=True, validators=Equal('x'))
+        >>> value = field(None)
+        RequiredError
+        >>> field2 = BaseField(validators=Equal('x'))
+        >>> value = field2()
+        >>> print value
+        None
+        >>> value = field2('z')
+        ValidationError
+        >>> value = field2('x')
+        >>> print value
+        x
+    
+    `default`
+        Default value.
+        If missing validatee value, to convert and return this value.
+    
+    `required`
+        Required field flag.
+        If this argument is *True* and default value is missing,
+        raise :exc:`RequiredError`.
+    
+    `empty_value`
+        Criterion value of *empty value*.
+    
+    `validators`
+        If this argument was given, to replace default validators by one.
+        
+        A *instance* of subclass of :class:`~validators.ValidatorBaseInterface`.
+    """
 
     validators = None
     converter = unicode_converter
     
-    def __init__(self, default=None, required=False, empty_value=None, validators=None):
+    def __init__(self,
+                 default=None,
+                 required=False,
+                 empty_value=None,
+                 validators=None):
         self.empty_value = empty_value
         if validators is not None:
             self.validators = validators
@@ -36,14 +73,15 @@ class BaseField(object):
                 self.default = default
 
     def __call__(self, value):
-        """validate the value
-        raises:
-            ValidationError: value is invalid.
-            RequiredError: value and default-value are missing, and required flag is True.
-            ConversionError: error occurred in converter.
-        return:
-            None: value and default-value are missing.
-            other: converted value.
+        """validate the value.
+        
+        :param value: validatee value.
+        :raise ValidationError: value is invalid.
+        :raise RequiredError: value and default-value are missing,
+                              and required flag is True.
+        :raise ConversionError: error occurred in converter.
+        :return: If value and default-value are missing, return None.
+                 otherwise, return a converted value.
         """
         try:
             self.apply_validators(value)
@@ -57,11 +95,11 @@ class BaseField(object):
         return self.converter(value)
     
     def apply_validators(self, value):
-        """apply validators to the value
-        raises:
-            ValidationError: value is invalid.
-            MissingDefault: value and default-value are missing.
-            ValueError: value is missing, but default-value is available.
+        """apply validators to the value.
+        
+        :raise ValidationError: value is invalid.
+        :raise MissingDefault: value and default-value are missing.
+        :raise ValueError: value is missing, but default-value is available.
         """
         if value != self.empty_value:
             try:

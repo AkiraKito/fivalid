@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from validators import *
+from ..validators import (
+    ValidationError,
+    All, Any,
+    Number, FreeText, Equal, Regex,
+    AllowType, Prefix, Type, Length,
+    OnelinerText, String, Int,
+    SortOrder, Flag
+)
 
 
 def err(validator, value):
