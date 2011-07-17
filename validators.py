@@ -342,7 +342,7 @@ class Length(Validator):
     """
 
     def __init__(self, min=0, max=None):
-        super(Length, self).__init__(max, min)
+        super(Length, self).__init__(min, max)
         self.max_length = max
         self.min_length = min if min >= 0 else 0
 
