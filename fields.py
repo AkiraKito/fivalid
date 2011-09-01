@@ -6,6 +6,7 @@ from converters import ConversionError, unicode_converter
 
 
 class RequiredError(BaseException):
+    """`required` flag is True and missing input value in `field`."""
     pass
 
 class MissingDefault(BaseException):
@@ -17,18 +18,29 @@ class BaseField(object):
     """Basic field validators and converter set.
     
     usage:
-        >>> field = BaseField(required=True, validators=Equal('x'))
-        >>> value = field(None)
+        >>> from validators import OnelinerText, Length, All
+        >>> class NameField(BaseField):
+        ...   validators = All(OnelinerText(), Length(max=10))
+        ... 
+        >>> field = NameField(required=True)
+        >>> name = field()  # with required flag
         RequiredError
-        >>> field2 = BaseField(validators=Equal('x'))
-        >>> value = field2()
-        >>> print value
-        None
-        >>> value = field2('z')
+        >>> name = field('John Doeeeee')
         ValidationError
-        >>> value = field2('x')
-        >>> print value
-        x
+        >>> name = field('Jane Doe')
+        >>> print name
+        u'Jane Doe'
+        >>> field = NameField()
+        >>> print field()   # without required flag
+        None
+        >>> field('R2-D2')
+        u'R2-D2'
+        >>> 
+    
+    .. note::
+        You have to set validator to :attr:`BaseField.validators`. Because default is :obj:`None`.
+        
+        :attr:`BaseField.converter` is :func:`converters.unicode_converter` by default.
     
     `default`
         Default value.
@@ -41,6 +53,9 @@ class BaseField(object):
     
     `empty_value`
         Criterion value of *empty value*.
+        
+        If the same as given value as `empty_value` when validate one, 
+        *given value* is treats as *empty*.
     
     `validators`
         If this argument was given, to replace default validators by one.
