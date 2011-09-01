@@ -1,8 +1,94 @@
 # -*- coding: utf-8 -*-
 
+"""
+    fivalid v1.1.0
+    
+    fivalid is lightweight field value validator.
+    
+    validation:
+        >>> from fivalid import validators
+        >>> num = validators.Number(max=20)
+        >>> num(10)
+        >>> num(21)
+        validators.ValidationError: over max
+        >>> strnum = validators.All(
+        ...   validators.Number(), validators.String())
+        >>> strnum('100')
+        >>> strnum(100)
+        validators.ValidationError: not same type
+    
+    field value validation and conversion:
+        >>> from fivalid import validators, converters
+        >>> from fivalid import BaseField
+        >>> class PercentageField(BaseField):
+        ...   validators = validators.All(
+        ...     validators.Number(min=0, max=100),
+        ...     validators.String())
+        ...   converter = converters.int_converter
+        ... 
+        >>> field = PercentageField()
+        >>> field('99')
+        99
+        >>> field('200')
+        fivalid.validators.ValidationError: over max
+        >>> input_data = {'lightness': '70'}
+        >>> lightness_field = PercentageField(empty_value='')
+        >>> lightness = lightness_field(input_data.get('lightness', ''))
+        >>> print lightness
+        70
+        >>> input_data2 = {}
+        >>> lightness = lightness_field(input_data.get('lightness', ''))
+        >>> print lightness
+        None
+    
+    data structure validation (same data structure will be return, but *all values* are :obj:`None`. because it's **validation only** use):
+        >>> from fivalid import StructuredFields, Seq, Dict
+        >>> from fivalid.validators import String, Length, All, Flag
+        >>> rule = Dict(
+        ...   {'comment': All(String(), Length(max=500)),
+        ...    'nickname': All(String(), Length(max=20)),
+        ...    'remember me': Flag()}
+        ... )
+        ... 
+        >>> data = {'comment': 'Hello, fivalid.',
+        ...         'nickname': 'John Doe',
+        ...         'remember me': '1'}
+        ... 
+        >>> stfields = StructuredFields(rule)
+        >>> stfields(data)
+        {'comment': None, 'nickname': None, 'remember me': None}
+        >>> StructuredFields.validate(data, rule) # same as
+        {'comment': None, 'nickname': None, 'remember me': None}
+    
+    data structure validation and conversion:
+        >>> from fivalid import StructuredFields, Seq, Dict
+        >>> from fivalid.validators import String, Length, All, Flag
+        >>> from fivalid import BaseField, 
+        >>> class CommentField(BaseField): validators = All(String(), Length(max=500))
+        ... 
+        >>> class NicknameField(BaseField): validators = All(String(), Length(max=20))
+        ... 
+        >>> class RememberMeField(BaseField): validators = Flag(); converter = truthvalue_converter
+        ... 
+        >>> rule = Dict(
+        ...   {'comment': CommentField(required=True),
+        ...    'nickname': NicknameField(),
+        ...    'remember me': RememberMeField()}
+        ... )
+        ... 
+        >>> stfields = StructuredFields(rule)
+        >>> stfields({'comment': 'Hello, fivalid.',
+        ...           'nickname': 'John Doe',
+        ...           'remember me': '1'})
+        {'comment': u'Hello, fivalid.', 'nickname': u'John Doe', 'remember me': True}
+        
+"""
+
+__version__ = '1.1.0'
+
 
 from validators import (
-    All, Any,
+    All, Any, ValueAdapter,
     Validator,
     Number, FreeText, Equal, Regex, AllowType, Prefix, Type, Length,
     OnelinerText, String, Int, SortOrder, Flag
@@ -21,4 +107,8 @@ from fields import (
     BaseField
 )
 
+from structures import (
+    StructuredFields,
+    Seq, Dict
+)
 
