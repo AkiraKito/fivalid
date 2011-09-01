@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to field validator’s documentation! &mdash; field validator v1.0 documentation</title>
+    <title>Welcome to fivalid’s documentation! &mdash; fivalid v1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.0',
+        VERSION:     '1.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="field validator v1.0 documentation" href="#" /> 
+    <link rel="top" title="fivalid v1.1.0 documentation" href="#" />
+    <link rel="next" title="Fields" href="fields.html" /> 
   </head>
   <body>
     <div class="related">
@@ -31,7 +32,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="#">field validator v1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fields.html" title="Fields"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">fivalid v1.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -40,388 +47,133 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-field-validator-s-documentation">
-<h1>Welcome to field validator&#8217;s documentation!<a class="headerlink" href="#welcome-to-field-validator-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="fields">
-<h2>fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="fields.BaseField">
-<em class="property">class </em><tt class="descclassname">fields.</tt><tt class="descname">BaseField</tt><big>(</big><em>default=None</em>, <em>required=False</em>, <em>empty_value=None</em>, <em>validators=None</em><big>)</big><a class="headerlink" href="#fields.BaseField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Basic field validators and converter set.</p>
+  <div class="section" id="welcome-to-fivalid-s-documentation">
+<h1>Welcome to fivalid&#8217;s documentation!<a class="headerlink" href="#welcome-to-fivalid-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-__init__">
+<span id="about"></span><h2>About<a class="headerlink" href="#module-__init__" title="Permalink to this headline">¶</a></h2>
+<p>fivalid v1.1.0</p>
+<p>fivalid is lightweight field value validator.</p>
 <dl class="docutils">
-<dt>usage:</dt>
-<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">BaseField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="n">Equal</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
-<span class="go">RequiredError</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">field2</span> <span class="o">=</span> <span class="n">BaseField</span><span class="p">(</span><span class="n">validators</span><span class="o">=</span><span class="n">Equal</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">field2</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">value</span>
-<span class="go">None</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">field2</span><span class="p">(</span><span class="s">&#39;z&#39;</span><span class="p">)</span>
-<span class="go">ValidationError</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span> <span class="o">=</span> <span class="n">field2</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">value</span>
-<span class="go">x</span>
+<dt>validation:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">validators</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">Number</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>
+<span class="go">validators.ValidationError: over max</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strnum</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">All</span><span class="p">(</span>
+<span class="gp">... </span>  <span class="n">validators</span><span class="o">.</span><span class="n">Number</span><span class="p">(),</span> <span class="n">validators</span><span class="o">.</span><span class="n">String</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strnum</span><span class="p">(</span><span class="s">&#39;100&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strnum</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="go">validators.ValidationError: not same type</span>
 </pre></div>
 </div>
 </dd>
-<dt><cite>default</cite></dt>
-<dd>Default value.
-If missing validatee value, to convert and return this value.</dd>
-<dt><cite>required</cite></dt>
-<dd>Required field flag.
-If this argument is <em>True</em> and default value is missing,
-raise <tt class="xref py py-exc docutils literal"><span class="pre">RequiredError</span></tt>.</dd>
-<dt><cite>empty_value</cite></dt>
-<dd>Criterion value of <em>empty value</em>.</dd>
-<dt><cite>validators</cite></dt>
-<dd><p class="first">If this argument was given, to replace default validators by one.</p>
-<p class="last">A <em>instance</em> of subclass of <tt class="xref py py-class docutils literal"><span class="pre">ValidatorBaseInterface</span></tt>.</p>
+<dt>field value validation and conversion:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">validators</span><span class="p">,</span> <span class="n">converters</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">BaseField</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">PercentageField</span><span class="p">(</span><span class="n">BaseField</span><span class="p">):</span>
+<span class="gp">... </span>  <span class="n">validators</span> <span class="o">=</span> <span class="n">validators</span><span class="o">.</span><span class="n">All</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">validators</span><span class="o">.</span><span class="n">Number</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">validators</span><span class="o">.</span><span class="n">String</span><span class="p">())</span>
+<span class="gp">... </span>  <span class="n">converter</span> <span class="o">=</span> <span class="n">converters</span><span class="o">.</span><span class="n">int_converter</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">PercentageField</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">(</span><span class="s">&#39;99&#39;</span><span class="p">)</span>
+<span class="go">99</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span><span class="p">(</span><span class="s">&#39;200&#39;</span><span class="p">)</span>
+<span class="go">fivalid.validators.ValidationError: over max</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;lightness&#39;</span><span class="p">:</span> <span class="s">&#39;70&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lightness_field</span> <span class="o">=</span> <span class="n">PercentageField</span><span class="p">(</span><span class="n">empty_value</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lightness</span> <span class="o">=</span> <span class="n">lightness_field</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;lightness&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">lightness</span>
+<span class="go">70</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">input_data2</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lightness</span> <span class="o">=</span> <span class="n">lightness_field</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;lightness&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">lightness</span>
+<span class="go">None</span>
+</pre></div>
+</div>
+</dd>
+<dt>data structure validation (same data structure will be return, but <em>all values</em> are <tt class="xref py py-obj xref docutils literal"><span class="pre">None</span></tt>. because it&#8217;s <strong>validation only</strong> use):</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">StructuredFields</span><span class="p">,</span> <span class="n">Seq</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid.validators</span> <span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">All</span><span class="p">,</span> <span class="n">Flag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rule</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span>
+<span class="gp">... </span>  <span class="p">{</span><span class="s">&#39;comment&#39;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="n">String</span><span class="p">(),</span> <span class="n">Length</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">500</span><span class="p">)),</span>
+<span class="gp">... </span>   <span class="s">&#39;nickname&#39;</span><span class="p">:</span> <span class="n">All</span><span class="p">(</span><span class="n">String</span><span class="p">(),</span> <span class="n">Length</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">)),</span>
+<span class="gp">... </span>   <span class="s">&#39;remember me&#39;</span><span class="p">:</span> <span class="n">Flag</span><span class="p">()}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;comment&#39;</span><span class="p">:</span> <span class="s">&#39;Hello, fivalid.&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">&#39;nickname&#39;</span><span class="p">:</span> <span class="s">&#39;John Doe&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s">&#39;remember me&#39;</span><span class="p">:</span> <span class="s">&#39;1&#39;</span><span class="p">}</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stfields</span> <span class="o">=</span> <span class="n">StructuredFields</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stfields</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">{&#39;comment&#39;: None, &#39;nickname&#39;: None, &#39;remember me&#39;: None}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">StructuredFields</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rule</span><span class="p">)</span> <span class="c"># same as</span>
+<span class="go">{&#39;comment&#39;: None, &#39;nickname&#39;: None, &#39;remember me&#39;: None}</span>
+</pre></div>
+</div>
+</dd>
+<dt>data structure validation and conversion:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">StructuredFields</span><span class="p">,</span> <span class="n">Seq</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid.validators</span> <span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">All</span><span class="p">,</span> <span class="n">Flag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">BaseField</span><span class="p">,</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentField</span><span class="p">(</span><span class="n">BaseField</span><span class="p">):</span> <span class="n">validators</span> <span class="o">=</span> <span class="n">All</span><span class="p">(</span><span class="n">String</span><span class="p">(),</span> <span class="n">Length</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">500</span><span class="p">))</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">NicknameField</span><span class="p">(</span><span class="n">BaseField</span><span class="p">):</span> <span class="n">validators</span> <span class="o">=</span> <span class="n">All</span><span class="p">(</span><span class="n">String</span><span class="p">(),</span> <span class="n">Length</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">RememberMeField</span><span class="p">(</span><span class="n">BaseField</span><span class="p">):</span> <span class="n">validators</span> <span class="o">=</span> <span class="n">Flag</span><span class="p">();</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">truthvalue_converter</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rule</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span>
+<span class="gp">... </span>  <span class="p">{</span><span class="s">&#39;comment&#39;</span><span class="p">:</span> <span class="n">CommentField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+<span class="gp">... </span>   <span class="s">&#39;nickname&#39;</span><span class="p">:</span> <span class="n">NicknameField</span><span class="p">(),</span>
+<span class="gp">... </span>   <span class="s">&#39;remember me&#39;</span><span class="p">:</span> <span class="n">RememberMeField</span><span class="p">()}</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">... </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stfields</span> <span class="o">=</span> <span class="n">StructuredFields</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stfields</span><span class="p">({</span><span class="s">&#39;comment&#39;</span><span class="p">:</span> <span class="s">&#39;Hello, fivalid.&#39;</span><span class="p">,</span>
+<span class="gp">... </span>          <span class="s">&#39;nickname&#39;</span><span class="p">:</span> <span class="s">&#39;John Doe&#39;</span><span class="p">,</span>
+<span class="gp">... </span>          <span class="s">&#39;remember me&#39;</span><span class="p">:</span> <span class="s">&#39;1&#39;</span><span class="p">})</span>
+<span class="go">{&#39;comment&#39;: u&#39;Hello, fivalid.&#39;, &#39;nickname&#39;: u&#39;John Doe&#39;, &#39;remember me&#39;: True}</span>
+</pre></div>
+</div>
 </dd>
 </dl>
-<dl class="method">
-<dt id="fields.BaseField.__call__">
-<tt class="descname">__call__</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#fields.BaseField.__call__" title="Permalink to this definition">¶</a></dt>
-<dd><p>validate the value.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>value</strong> &#8211; validatee value.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first simple">
-<li><strong>ValidationError</strong> &#8211; value is invalid.</li>
-<li><strong>RequiredError</strong> &#8211; value and default-value are missing,
-and required flag is True.</li>
-<li><strong>ConversionError</strong> &#8211; error occurred in converter.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">If value and default-value are missing, return None.
-otherwise, return a converted value.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 </div>
-<div class="section" id="validators">
-<h2>validators<a class="headerlink" href="#validators" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="validators.All">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">All</tt><big>(</big><em>*validators</em><big>)</big><a class="headerlink" href="#validators.All" title="Permalink to this definition">¶</a></dt>
-<dd><p>AND operation for validators.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Any">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Any</tt><big>(</big><em>*validators</em><big>)</big><a class="headerlink" href="#validators.Any" title="Permalink to this definition">¶</a></dt>
-<dd><p>OR operation for validators.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Validator">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Validator</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#validators.Validator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validator base class.</p>
-<dl class="docutils">
-<dt>inherit tips:</dt>
-<dd>call Validator.__init__() with <em>ALL arguments</em>.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Number">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Number</tt><big>(</big><em>min=None</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validators.Number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number validator.</p>
-<dl class="docutils">
-<dt><cite>min</cite></dt>
-<dd>min of valid value.</dd>
-<dt><cite>max</cite></dt>
-<dd>max of valid value.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.FreeText">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">FreeText</tt><big>(</big><em>ban_phrases=None</em>, <em>ignore_chars=None</em><big>)</big><a class="headerlink" href="#validators.FreeText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Free text validator.</p>
-<dl class="docutils">
-<dt><cite>ban_phrases</cite></dt>
-<dd>List of ban phrase.</dd>
-<dt><cite>ignore_chars</cite></dt>
-<dd>List of ignore string.
-If ignore string is found in value, erase from the value
-before check ban phrases.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Equal">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Equal</tt><big>(</big><em>eq_value</em><big>)</big><a class="headerlink" href="#validators.Equal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Equal value validator.</p>
-<dl class="docutils">
-<dt><cite>eq_value</cite></dt>
-<dd>Value is equal to <cite>ea_value</cite>, value is &#8220;valid&#8221;.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Regex">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Regex</tt><big>(</big><em>regexp</em>, <em>is_match=True</em>, <em>flags=None</em><big>)</big><a class="headerlink" href="#validators.Regex" title="Permalink to this definition">¶</a></dt>
-<dd><p>Value validation by regexp.</p>
-<dl class="docutils">
-<dt><cite>regexp</cite></dt>
-<dd>Regular expression.</dd>
-<dt><cite>is_match</cite></dt>
-<dd>If True, use <tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt>.
-Otherwise use <tt class="xref py py-func docutils literal"><span class="pre">re.search()</span></tt>.</dd>
-<dt><cite>flags</cite></dt>
-<dd><p class="first">Sequence of flags.
-Acceptable types are: list, tuple, set, frozenset, basestring</p>
-<ul class="last simple">
-<li>&#8220;i&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.IGNORECASE</span></tt></li>
-<li>&#8220;l&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.LOCALE</span></tt></li>
-<li>&#8220;m&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.MULTILINE</span></tt></li>
-<li>&#8220;s&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.DOTALL</span></tt></li>
-<li>&#8220;u&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.UNICODE</span></tt></li>
-<li>&#8220;x&#8221;: <tt class="xref py py-data docutils literal"><span class="pre">re.VERBOSE</span></tt></li>
+<div class="section" id="contents">
+<h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fields.html">Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validators.html">Validators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="converters.html">Converters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structures.html">Structured data validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="structures.html#rule-for-data-validation">Rule for data validation</a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.AllowType">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">AllowType</tt><big>(</big><em>test_type</em>, <em>on_exception=None</em><big>)</big><a class="headerlink" href="#validators.AllowType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is TYPE allowed the value?</p>
-<dl class="docutils">
-<dt><cite>test_type</cite></dt>
-<dd>Callable.
-If raise exception when call this, value is &#8220;invalid&#8221;.</dd>
-<dt><cite>on_exception</cite></dt>
-<dd>Exception callback.
-When call occurred exception by <cite>test_type</cite>.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Prefix">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Prefix</tt><big>(</big><em>prefix</em><big>)</big><a class="headerlink" href="#validators.Prefix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prefix validator.</p>
-<dl class="docutils">
-<dt><cite>prefix</cite></dt>
-<dd>If value that starts from <cite>prefix</cite>, evaluate the value as &#8220;valid&#8221;.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Type">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Type</tt><big>(</big><em>value_type</em><big>)</big><a class="headerlink" href="#validators.Type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Value type validator.</p>
-<dl class="docutils">
-<dt><cite>value_type</cite></dt>
-<dd>Expected type of the value.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Length">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Length</tt><big>(</big><em>min=0</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validators.Length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Limit length.</p>
-<dl class="docutils">
-<dt><cite>max</cite></dt>
-<dd>max length.</dd>
-<dt><cite>min</cite></dt>
-<dd>min length.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.OnelinerText">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">OnelinerText</tt><big>(</big><em>ban_phrases=None</em>, <em>ignore_chars=None</em><big>)</big><a class="headerlink" href="#validators.OnelinerText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Free text without linefeed code.</p>
-<p>Arguments are the same as <a class="reference internal" href="#validators.FreeText" title="validators.FreeText"><tt class="xref py py-class docutils literal"><span class="pre">FreeText</span></tt></a>.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.String">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">String</tt><a class="headerlink" href="#validators.String" title="Permalink to this definition">¶</a></dt>
-<dd><p>String type only.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Int">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Int</tt><a class="headerlink" href="#validators.Int" title="Permalink to this definition">¶</a></dt>
-<dd><p>Int type only.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.SortOrder">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">SortOrder</tt><a class="headerlink" href="#validators.SortOrder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort order validator.</p>
-<dl class="docutils">
-<dt>Acceptable value:</dt>
-<dd>asc: ascending order.
-desc: descending order.</dd>
-</dl>
-</dd></dl>
-
-<dl class="class">
-<dt id="validators.Flag">
-<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Flag</tt><a class="headerlink" href="#validators.Flag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flag validator.</p>
-</dd></dl>
-
+</li>
+</ul>
 </div>
-<div class="section" id="converters">
-<h2>converters<a class="headerlink" href="#converters" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="converters.unicode_converter">
-<tt class="descclassname">converters.</tt><tt class="descname">unicode_converter</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#converters.unicode_converter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unicode converter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>field</strong> &#8211; Reference to subclass of BaseField instance object.</li>
-<li><strong>value</strong> &#8211; Will convert value.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">Raises ConversionError:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body"><p class="first">Failed to convert the value.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Python <cite>unicode</cite>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="converters.float_converter">
-<tt class="descclassname">converters.</tt><tt class="descname">float_converter</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#converters.float_converter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Float converter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>field</strong> &#8211; Reference to subclass of BaseField instance object.</li>
-<li><strong>value</strong> &#8211; Will convert value.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">Raises ConversionError:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body"><p class="first">Failed to convert the value.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Python <cite>float</cite>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="converters.int_converter">
-<tt class="descclassname">converters.</tt><tt class="descname">int_converter</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#converters.int_converter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Int converter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>field</strong> &#8211; Reference to subclass of BaseField instance object.</li>
-<li><strong>value</strong> &#8211; Will convert value.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">Raises ConversionError:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body"><p class="first">Failed to convert the value.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Python <cite>int</cite>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="converters.truthvalue_converter">
-<tt class="descclassname">converters.</tt><tt class="descname">truthvalue_converter</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#converters.truthvalue_converter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Truth value converter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>field</strong> &#8211; Reference to subclass of BaseField instance object.</li>
-<li><strong>value</strong> &#8211; &#8220;true&#8221; or &#8220;t&#8221; or &#8220;1&#8221; is True,
-&#8220;false&#8221; or &#8220;f&#8221; or &#8220;0&#8221; is False.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">Raises ConversionError:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body"><p class="first">value is unacceptable.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Python <cite>bool</cite>.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="converters.colon_separated_converter">
-<tt class="descclassname">converters.</tt><tt class="descname">colon_separated_converter</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#converters.colon_separated_converter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Colon separated value conveter.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>field</strong> &#8211; Reference to subclass of BaseField instance object.</li>
-<li><strong>value</strong> &#8211; Colon(&#8221;:&#8221;) separated string.</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">Raises ConversionError:</th></tr>
-<tr><td>&nbsp;</td><td class="field-body"><p class="first">Failed to convert the value.</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Tuple of before-value and behind-value.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 <div class="section" id="exceptions">
 <h2>exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <dl class="exception">
-<dt id="fields.RequiredError">
-<em class="property">exception </em><tt class="descclassname">fields.</tt><tt class="descname">RequiredError</tt><a class="headerlink" href="#fields.RequiredError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="__init__.RequiredError">
+<em class="property">exception </em><tt class="descclassname">__init__.</tt><tt class="descname">RequiredError</tt><a class="headerlink" href="#__init__.RequiredError" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>required</cite> flag is True and missing input value in <cite>field</cite>.</p>
+</dd></dl>
 
 <dl class="exception">
-<dt id="validators.ValidationError">
-<em class="property">exception </em><tt class="descclassname">validators.</tt><tt class="descname">ValidationError</tt><a class="headerlink" href="#validators.ValidationError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="__init__.ValidationError">
+<em class="property">exception </em><tt class="descclassname">__init__.</tt><tt class="descname">ValidationError</tt><a class="headerlink" href="#__init__.ValidationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error occurred while validation.</p>
+</dd></dl>
 
 <dl class="exception">
-<dt id="converters.ConversionError">
-<em class="property">exception </em><tt class="descclassname">converters.</tt><tt class="descname">ConversionError</tt><a class="headerlink" href="#converters.ConversionError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="__init__.ConversionError">
+<em class="property">exception </em><tt class="descclassname">__init__.</tt><tt class="descname">ConversionError</tt><a class="headerlink" href="#__init__.ConversionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error occurred while value conversion.</p>
+</dd></dl>
 
 </div>
 </div>
@@ -442,16 +194,20 @@ desc: descending order.</dd>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to field validator&#8217;s documentation!</a><ul>
-<li><a class="reference internal" href="#fields">fields</a></li>
-<li><a class="reference internal" href="#validators">validators</a></li>
-<li><a class="reference internal" href="#converters">converters</a></li>
+<li><a class="reference internal" href="#">Welcome to fivalid&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#module-__init__">About</a></li>
+<li><a class="reference internal" href="#contents">Contents:</a><ul>
+</ul>
+</li>
 <li><a class="reference internal" href="#exceptions">exceptions</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fields.html"
+                        title="next chapter">Fields</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -480,7 +236,13 @@ desc: descending order.</dd>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="#">field validator v1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="fields.html" title="Fields"
+             >next</a> |</li>
+        <li><a href="#">fivalid v1.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
