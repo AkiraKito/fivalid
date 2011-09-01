@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-
-
 import pickle
 import hashlib
 import re
 
 
-
 class ValidationError(BaseException):
+    """Error occurred while validation."""
     pass
 
 
@@ -104,8 +102,34 @@ class Any(ValidatorBaseInterface):
             raise first_err
 
 
+class ValueAdapter(ValidatorBaseInterface):
+    """Adapt value to validators when validate a value."""
+    
+    def on_adapt(self, value):
+        """Value processor.
+        
+        Must be return processed value.
+        """
+        raise NotImplementedError
+    
+    def validate(self, value):
+        for validator in self.validators:
+            validator(self.on_adapt(value))
+
+    def add(self, other):
+        pass
+
+    def remove(self, other):
+        pass
+
+
 class Validator(ValidatorBaseInterface):
     """Validator base class.
+    
+    Validator is identified by a combination of own *class name* and 
+    *all arguments*.
+    That is, validator is the same as other if one is instantiate from same class with 
+    **same arguments**.
     
     inherit tips:
         call Validator.__init__() with *ALL arguments*.
@@ -117,6 +141,10 @@ class Validator(ValidatorBaseInterface):
             pickle.dumps(args, pickle.HIGHEST_PROTOCOL) +\
             pickle.dumps(kwargs, pickle.HIGHEST_PROTOCOL)).digest()
 
+    @property
+    def ident(self):
+        return self.__hash
+
     def add(self, other):
         pass
 
@@ -124,6 +152,34 @@ class Validator(ValidatorBaseInterface):
         pass
 
 
+class Not(Validator):
+    """NOT operation for validators."""
+    
+    def __init__(self, validator):
+        super(Not, self).__init__(validator)
+        self.validator = validator
+    
+    def validate(self, value):
+        try:
+            self.validator(value)
+        except ValidationError:
+            pass
+        else:
+            raise ValidationError('ValidationError is not raised')
+
+
+class Failure(Validator):
+    """Surely fail validator."""
+    
+    def validate(self, value):
+        raise ValidationError('Surely fail')
+
+
+class Pass(Validator):
+    """Surely pass validator."""
+    
+    def validate(self, value):
+        pass
 
 
 class Number(Validator):
@@ -189,7 +245,10 @@ class Equal(Validator):
     """Equal value validator.
     
     `eq_value`
-       Value is equal to `ea_value`, value is "valid".
+        Value is equal to `ea_value`, value is "valid". 
+        
+        Note: If *value* type is `str` and `eq_value` type is `unicode`, 
+        the *value* to be decode as **UTF-8**.
     """
 
     def __init__(self, eq_value):
@@ -199,8 +258,9 @@ class Equal(Validator):
     def validate(self, value):
         if (not isinstance(value, basestring)) or \
                 (not isinstance(self.eq_value, basestring)):
-            raise ValidationError('not string')
-        if isinstance(value, unicode):
+            if self.eq_value != value:
+                raise ValidationError('not equal')
+        elif isinstance(value, unicode):
             if isinstance(self.eq_value, unicode):
                 if self.eq_value != value:
                     raise ValidationError('not equal')
@@ -335,10 +395,10 @@ class Type(Validator):
 class Length(Validator):
     """Limit length.
     
-    `max`
-        max length.
     `min`
         min length.
+    `max`
+        max length.
     """
 
     def __init__(self, min=0, max=None):
@@ -390,8 +450,10 @@ class SortOrder(Any):
     """Sort order validator.
     
     Acceptable value:
-        asc: ascending order.
-        desc: descending order.
+        ``asc``:
+            ascending order.
+        ``desc``:
+            descending order.
     """
     
     def __init__(self):

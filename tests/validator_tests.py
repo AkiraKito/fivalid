@@ -3,6 +3,9 @@
 from ..validators import (
     ValidationError,
     All, Any,
+    ValueAdapter,
+    Not,
+    Failure, Pass,
     Number, FreeText, Equal, Regex,
     AllowType, Prefix, Type, Length,
     OnelinerText, String, Int,
@@ -22,8 +25,8 @@ def err(validator, value):
 def suc(validator, value):
     try:
         validator(value)
-    except ValidationError:
-        raise AssertionError
+    except ValidationError, e:
+        raise AssertionError(e)
 
 
 def no_nest_Any_test():
@@ -40,6 +43,32 @@ def no_nest_All_test():
     err(v, 'abcd')
 
 
+def value_adapter_test():
+    class TestValueAdapter(ValueAdapter):
+        def on_adapt(self, value):
+            return str(value)
+    v = TestValueAdapter(Number())
+    if not isinstance(v.on_adapt(100), basestring):
+        raise AssertionError
+    suc(v, 100)
+    suc(v, '200')
+    err(v, 'a')
+
+def not_test():
+    v = Not(Equal(2))
+    suc(v, '2000')
+    err(v, 2)
+
+def failure_test():
+    v = Failure()
+    err(v, None)
+    err(v, 'none')
+    err(v, 200)
+
+def pass_test():
+    v = Pass()
+    suc(v, None)
+    suc(v, 300)
 
 def number_test():
     v = Number()
@@ -115,6 +144,8 @@ def equal_test():
     suc(v, '1')
     suc(v, u'1')
     err(v, 1)
+    err(v, '2')
+    err(v, 2)
 
     v2 = Equal(u'寿限無')
     suc(v2, u'寿限無')
