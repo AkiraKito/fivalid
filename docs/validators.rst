@@ -32,6 +32,8 @@ Validators
 
 .. autoclass:: validators.Length
 
+.. autoclass:: validators.Split
+
 .. autoclass:: validators.OnelinerText
 
 .. autoclass:: validators.String

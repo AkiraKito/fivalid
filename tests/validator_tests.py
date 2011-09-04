@@ -9,7 +9,7 @@ from ..validators import (
     Number, FreeText, Equal, Regex,
     AllowType, Prefix, Type, Length,
     OnelinerText, String, Int,
-    SortOrder, Flag
+    SortOrder, Flag, Split
 )
 
 
@@ -274,6 +274,42 @@ def flag_test():
     suc(v, 'f')
     suc(v, '0')
 
+
+def split_test():
+    v = Split(Equal('HMX'), Number(max=16), sep='-')
+    suc(v, 'HMX-1')
+    suc(v, 'HMX-13')
+    suc(v, 'HMX-16')
+    
+    err(v, 'HMX-16a')
+    
+    err(v, 'MMX-1')
+
+    err(v, 'HMX@16')
+
+    err(v, 'HMX-00-1')
+
+    v = Split(
+        Equal('HMX'),
+        Any(Equal('16a'), Equal('16b'), Equal('16c')),
+        sep='-')
+    suc(v, 'HMX-16a')
+    suc(v, 'HMX-16b')
+    suc(v, 'HMX-16c')
+
+    err(v, 'HMX-16')
+
+    # left match
+    v = Split(Pass(), Number(), sep='-')
+    suc(v, 'xxxxxxx-1024')
+    suc(v, '-4423')
+
+    err(v, '---3')
+
+    # right match
+    v = Split(Pass(), Number(), Number(), sep='-', rmatch=True)
+    suc(v, 'xxxxx200-300-400')
+    suc(v, '-300-400')
 
 
 if __name__ == '__main__':

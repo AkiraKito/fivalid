@@ -3,6 +3,7 @@
 import pickle
 import hashlib
 import re
+import itertools
 
 
 class ValidationError(BaseException):
@@ -259,19 +260,19 @@ class Equal(Validator):
         if (not isinstance(value, basestring)) or \
                 (not isinstance(self.eq_value, basestring)):
             if self.eq_value != value:
-                raise ValidationError('not equal')
+                raise ValidationError('%s is not equal' % value)
         elif isinstance(value, unicode):
             if isinstance(self.eq_value, unicode):
                 if self.eq_value != value:
-                    raise ValidationError('not equal')
+                    raise ValidationError('%s is not equal' % value)
             elif self.eq_value.decode('utf-8') != value:
-                raise ValidationError('not equal')
+                raise ValidationError('%s is not equal' % value)
         else:
             if isinstance(self.eq_value, unicode):
                 if self.eq_value != value.decode('utf-8'):
-                    raise ValidationError('not equal')
+                    raise ValidationError('%s is not equal' % value)
             elif self.eq_value != value:
-                raise ValidationError('not equal')
+                raise ValidationError('%s is not equal' % value)
 
 
 class Regex(Validator):
@@ -283,6 +284,8 @@ class Regex(Validator):
     `is_match`
         If True, use :func:`re.match`.
         Otherwise use :func:`re.search`.
+        
+        This flag is True by default.
     
     `flags`
         Sequence of flags.
@@ -415,6 +418,60 @@ class Length(Validator):
                 raise ValidationError('less than min length')
 
 
+class Split(Validator):
+    """Split value validator.
+    
+    usage:
+        >>> console = Any(Equal('001'), Equal('101'))
+        >>> model_number = Split(Equal('HVC'), console, sep='-')
+        >>> model_number('HVC-001')
+        >>> model_number('HVC-002')
+        validators.ValidationError: 002 is not equal
+    
+    `*validators`
+        Validator for splited values.
+        
+        Number of *validators* have to same as number of part of splited values.
+    
+    `sep`
+        Value separator.
+        
+        Value will be split by this separator string.
+    
+    `rmatch`
+        Right match flag.
+        
+        If this flag is :obj:`True`, to apply validator from *right side*. 
+        Otherwise, to apply validator from *left side*.
+        
+        :obj:`False` by default.
+    """
+    
+    def __init__(self, *validators, **options):
+        sep = options.pop('sep', '-')
+        rmatch = options.pop('rmatch', False)
+        super(Split, self).__init__(sep=sep, rmatch=rmatch, *validators)
+        self.validators = validators
+        self.separator = sep
+        self.rmatch = rmatch
+    
+    def validate(self, value):
+        if not isinstance(value, basestring):
+            try:
+                value = unicode(value)
+            except UnicodeDecodeError:
+                try:
+                    value = value.decode('utf-8')
+                except UnicodeDecodeError:
+                    raise ValidationError('Value is not UTF-8.')
+        if self.rmatch:
+            splited = value.rsplit(self.separator, len(self.validators) - 1)
+        else:
+            splited = value.split(self.separator, len(self.validators) - 1)
+        if len(splited) != len(self.validators):
+            raise ValidationError('Number of splited value is mismatch.')
+        for validator, token in itertools.izip(self.validators, splited):
+            validator(token)
 
 
 # derivative

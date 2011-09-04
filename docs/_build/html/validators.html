@@ -170,8 +170,10 @@ the <em>value</em> to be decode as <strong>UTF-8</strong>.</p>
 <dt><cite>regexp</cite></dt>
 <dd>Regular expression.</dd>
 <dt><cite>is_match</cite></dt>
-<dd>If True, use <tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt>.
-Otherwise use <tt class="xref py py-func docutils literal"><span class="pre">re.search()</span></tt>.</dd>
+<dd><p class="first">If True, use <tt class="xref py py-func docutils literal"><span class="pre">re.match()</span></tt>.
+Otherwise use <tt class="xref py py-func docutils literal"><span class="pre">re.search()</span></tt>.</p>
+<p class="last">This flag is True by default.</p>
+</dd>
 <dt><cite>flags</cite></dt>
 <dd><p class="first">Sequence of flags.
 Acceptable types are: list, tuple, set, frozenset, basestring</p>
@@ -230,6 +232,37 @@ When call occurred exception by <cite>test_type</cite>.</dd>
 <dd>min length.</dd>
 <dt><cite>max</cite></dt>
 <dd>max length.</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="validators.Split">
+<em class="property">class </em><tt class="descclassname">validators.</tt><tt class="descname">Split</tt><big>(</big><em>*validators</em>, <em>**options</em><big>)</big><a class="headerlink" href="#validators.Split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split value validator.</p>
+<dl class="docutils">
+<dt>usage:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">console</span> <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="n">Equal</span><span class="p">(</span><span class="s">&#39;001&#39;</span><span class="p">),</span> <span class="n">Equal</span><span class="p">(</span><span class="s">&#39;101&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_number</span> <span class="o">=</span> <span class="n">Split</span><span class="p">(</span><span class="n">Equal</span><span class="p">(</span><span class="s">&#39;HVC&#39;</span><span class="p">),</span> <span class="n">console</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_number</span><span class="p">(</span><span class="s">&#39;HVC-001&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_number</span><span class="p">(</span><span class="s">&#39;HVC-002&#39;</span><span class="p">)</span>
+<span class="go">validators.ValidationError: 002 is not equal</span>
+</pre></div>
+</div>
+</dd>
+<dt><cite>*validators</cite></dt>
+<dd><p class="first">Validator for splited values.</p>
+<p class="last">Number of <em>validators</em> have to same as number of part of splited values.</p>
+</dd>
+<dt><cite>sep</cite></dt>
+<dd><p class="first">Value separator.</p>
+<p class="last">Value will be split by this separator string.</p>
+</dd>
+<dt><cite>rmatch</cite></dt>
+<dd><p class="first">Right match flag.</p>
+<p>If this flag is <tt class="xref py py-obj xref docutils literal"><span class="pre">True</span></tt>, to apply validator from <em>right side</em>. 
+Otherwise, to apply validator from <em>left side</em>.</p>
+<p class="last"><tt class="xref py py-obj xref docutils literal"><span class="pre">False</span></tt> by default.</p>
+</dd>
 </dl>
 </dd></dl>
 
