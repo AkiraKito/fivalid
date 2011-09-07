@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ..converters import (
+import sys, os
+sys.path.insert(0, os.path.join('..', 'fivalid'))
+from converters import (
     ConversionError,
     unicode_converter,
     float_converter,
@@ -77,13 +79,6 @@ def truthvalue_converter_test():
     value = truthvalue_converter(None, '0')
     assert isinstance(value, bool)
     assert value == False
-
-    try:
-        truthvalue_converter(None, 'balse')
-    except ConversionError:
-        pass
-    else:
-        raise AssertionError
 
 
 def colon_separated_converter_test():

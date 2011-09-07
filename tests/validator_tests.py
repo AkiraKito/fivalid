@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ..validators import (
+import sys, os
+sys.path.insert(0, os.path.join('..', 'fivalid'))
+from validators import (
     ValidationError,
     All, Any,
     ValueAdapter,

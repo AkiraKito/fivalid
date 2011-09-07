@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import sys, os
+sys.path.insert(0, os.path.join('..', 'fivalid'))
 
-from ..fields import (
+from fields import (
     RequiredError,
     BaseField
 )
-from ..validators import (
+from validators import (
     ValidationError,
     All, Any,
     Number, FreeText, Equal, Regex,
@@ -13,7 +15,7 @@ from ..validators import (
     OnelinerText, String, Int,
     SortOrder, Flag
 )
-from ..converters import (
+from converters import (
     ConversionError,
     unicode_converter,
     float_converter,

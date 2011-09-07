@@ -3,14 +3,16 @@
 from unittest import TestCase
 from nose.tools import nottest
 
-from ..fields import BaseField, RequiredError
-from ..validators import (
+import sys, os
+sys.path.insert(0, os.path.join('..', 'fivalid'))
+from fields import BaseField, RequiredError
+from validators import (
     Type, Equal, Number, String,
     Any, All, Failure, ValueAdapter,
     ValidationError
 )
-from ..converters import int_converter
-from .. structures import Seq, Dict, StructuredFields
+from converters import int_converter
+from  structures import Seq, Dict, StructuredFields
 
 
 
