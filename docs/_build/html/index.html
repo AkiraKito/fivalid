@@ -88,7 +88,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">lightness</span>
 <span class="go">70</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_data2</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lightness</span> <span class="o">=</span> <span class="n">lightness_field</span><span class="p">(</span><span class="n">input_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;lightness&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lightness</span> <span class="o">=</span> <span class="n">lightness_field</span><span class="p">(</span><span class="n">input_data2</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;lightness&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">lightness</span>
 <span class="go">None</span>
 </pre></div>
@@ -118,6 +118,7 @@
 <dt>data structure validation and conversion:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">StructuredFields</span><span class="p">,</span> <span class="n">Seq</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid.validators</span> <span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">All</span><span class="p">,</span> <span class="n">Flag</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">converters</span> <span class="kn">import</span> <span class="n">truthvalue_converter</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fivalid</span> <span class="kn">import</span> <span class="n">BaseField</span><span class="p">,</span> 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">CommentField</span><span class="p">(</span><span class="n">BaseField</span><span class="p">):</span> <span class="n">validators</span> <span class="o">=</span> <span class="n">All</span><span class="p">(</span><span class="n">String</span><span class="p">(),</span> <span class="n">Length</span><span class="p">(</span><span class="nb">max</span><span class="o">=</span><span class="mi">500</span><span class="p">))</span>
 <span class="gp">... </span>

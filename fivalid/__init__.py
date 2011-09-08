@@ -37,7 +37,7 @@
         >>> print lightness
         70
         >>> input_data2 = {}
-        >>> lightness = lightness_field(input_data.get('lightness', ''))
+        >>> lightness = lightness_field(input_data2.get('lightness', ''))
         >>> print lightness
         None
     
@@ -63,6 +63,7 @@
     data structure validation and conversion:
         >>> from fivalid import StructuredFields, Seq, Dict
         >>> from fivalid.validators import String, Length, All, Flag
+        >>> from converters import truthvalue_converter
         >>> from fivalid import BaseField, 
         >>> class CommentField(BaseField): validators = All(String(), Length(max=500))
         ... 
