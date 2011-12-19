@@ -8,10 +8,10 @@ except ImportError:
 
 setup(
     name='fivalid',
-    version='0.1.1',
+    version='0.1.2',
     license='BSD',
     author='Akira Kito',
-    description='Lightweight field value validator.',
+    description='Lightweight field data validator.',
     long_description=open('README.rst').read(),
     packages=['fivalid'],
     classifiers=[

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-    fivalid v0.1.1
+    fivalid v0.1.2
     
-    fivalid is lightweight data validator.
+    fivalid is lightweight field data validator.
     
     validation:
         >>> from fivalid import validators
