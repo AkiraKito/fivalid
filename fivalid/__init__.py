@@ -3,7 +3,7 @@
 """
     fivalid v0.1.1
     
-    fivalid is lightweight field value validator.
+    fivalid is lightweight data validator.
     
     validation:
         >>> from fivalid import validators
@@ -18,14 +18,12 @@
         validators.ValidationError: not same type
     
     field value validation and conversion:
-        >>> from fivalid import validators, converters
-        >>> from fivalid import BaseField
+        >>> from fivalid import BaseField, validators, converters
         >>> class PercentageField(BaseField):
         ...   validator = validators.All(
         ...     validators.Number(min=0, max=100),
         ...     validators.String())
         ...   converter = converters.int_converter
-        ... 
         >>> field = PercentageField()
         >>> field('99')
         99
@@ -49,11 +47,9 @@
         ...    'nickname': All(String(), Length(max=20)),
         ...    'remember me': Flag()}
         ... )
-        ... 
         >>> data = {'comment': 'Hello, fivalid.',
         ...         'nickname': 'John Doe',
         ...         'remember me': '1'}
-        ... 
         >>> stfields = StructuredFields(rule)
         >>> stfields(data)
         {'comment': None, 'nickname': None, 'remember me': None}
@@ -61,22 +57,17 @@
         {'comment': None, 'nickname': None, 'remember me': None}
     
     data structure validation and conversion:
-        >>> from fivalid import StructuredFields, Seq, Dict
+        >>> from fivalid import StructuredFields, Seq, Dict, BaseField
         >>> from fivalid.validators import String, Length, All, Flag
-        >>> from converters import truthvalue_converter
-        >>> from fivalid import BaseField, 
+        >>> from fivalid.converters import truthvalue_converter
         >>> class CommentField(BaseField): validator = All(String(), Length(max=500))
-        ... 
         >>> class NicknameField(BaseField): validator = All(String(), Length(max=20))
-        ... 
         >>> class RememberMeField(BaseField): validator = Flag(); converter = truthvalue_converter
-        ... 
         >>> rule = Dict(
         ...   {'comment': CommentField(required=True),
         ...    'nickname': NicknameField(),
         ...    'remember me': RememberMeField()}
         ... )
-        ... 
         >>> stfields = StructuredFields(rule)
         >>> stfields({'comment': 'Hello, fivalid.',
         ...           'nickname': 'John Doe',
