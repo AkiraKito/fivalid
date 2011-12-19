@@ -327,11 +327,11 @@ class Dict(StructureRule):
     def get(self, ident=None):
         """Rule getter.
         
-        If rules are not have `ident`, will error occur in validation.
+        If rule dict is not have key `ident`, will error occur in validation.
         
         :param ident: Key of rule dictionary.
         :return: A rule.
-        :rtype: If leaf node of data, return Validator or Field object.
+        :rtype: If rule is leaf node of data, return Validator or Field object.
                 Otherwise, return :class:`Seq` or :class:`Dict`.
         """
         return self.rules.get(ident, validators.Failure())

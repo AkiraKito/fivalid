@@ -154,7 +154,7 @@ class Validator(ValidatorBaseInterface):
 
 
 class Not(Validator):
-    """NOT operation for validators."""
+    """NOT operation for validator."""
     
     def __init__(self, validator):
         super(Not, self).__init__(validator)
@@ -246,7 +246,7 @@ class Equal(Validator):
     """Equal value validator.
     
     `eq_value`
-        Value is equal to `ea_value`, value is "valid". 
+        If value is equal to `ea_value`, value is "valid". 
         
         Note: If *value* type is `str` and `eq_value` type is `unicode`, 
         the *value* to be decode as **UTF-8**.
