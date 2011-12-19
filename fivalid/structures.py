@@ -39,9 +39,9 @@ class StructuredFields(object):
         {'binary': (None, None), 'quaternary': [None, None, None, None]}
         >>> from fields import BaseField
         >>> class BinaryField(BaseField):
-        ...   validators = validators.Number(min=0, max=1)
+        ...   validator = validators.Number(min=0, max=1)
         >>> class QuaternaryField(BaseField):
-        ...   validators = validators.Number(min=0, max=3)
+        ...   validator = validators.Number(min=0, max=3)
         >>> rule = Dict(
         ...   binary=Seq(
         ...     BinaryField(required=True),

@@ -15,12 +15,12 @@ class MissingDefault(BaseException):
 
 
 class BaseField(object):
-    """Basic field validators and converter set.
+    """Basic field validator and converter set.
     
     usage:
         >>> from validators import OnelinerText, Length, All
         >>> class NameField(BaseField):
-        ...   validators = All(OnelinerText(), Length(max=10))
+        ...   validator = All(OnelinerText(), Length(max=10))
         ... 
         >>> field = NameField(required=True)
         >>> name = field()  # with required flag
@@ -38,7 +38,7 @@ class BaseField(object):
         >>> 
     
     .. note::
-        You have to set validator to :attr:`BaseField.validators`. Because default is :obj:`None`.
+        You have to set validator to :attr:`BaseField.validator`. Because default is :obj:`None`.
         
         :attr:`BaseField.converter` is :func:`converters.unicode_converter` by default.
     
@@ -57,29 +57,29 @@ class BaseField(object):
         If the same as given value as `empty_value` when validate one, 
         *given value* is treats as *empty*.
     
-    `validators`
-        If this argument was given, to replace default validators by one.
+    `validator`
+        If this argument was given, to replace default validator by one.
         
         A *instance* of subclass of :class:`~validators.ValidatorBaseInterface`.
     """
 
-    validators = None
+    validator = None
     converter = unicode_converter
     
     def __init__(self,
                  default=None,
                  required=False,
                  empty_value=None,
-                 validators=None):
+                 validator=None):
         self.empty_value = empty_value
-        if validators is not None:
-            self.validators = validators
+        if validator is not None:
+            self.validator = validator
         self.required = required 
         if default is None:
             self.default = default
         else:
             try:
-                self.apply_validators(default)
+                self.apply_validator(default)
             except (MissingDefault, ValueError):
                 pass
             except ValidationError:
@@ -99,7 +99,7 @@ class BaseField(object):
                  otherwise, return a converted value.
         """
         try:
-            self.apply_validators(value)
+            self.apply_validator(value)
         except MissingDefault:
             if self.required:
                 raise RequiredError
@@ -109,8 +109,8 @@ class BaseField(object):
             return self.converter(self.default)
         return self.converter(value)
     
-    def apply_validators(self, value):
-        """apply validators to the value.
+    def apply_validator(self, value):
+        """apply validator to the value.
         
         :raise ValidationError: value is invalid.
         :raise MissingDefault: value and default-value are missing.
@@ -118,7 +118,7 @@ class BaseField(object):
         """
         if value != self.empty_value:
             try:
-                self.validators(value)
+                self.validator(value)
             except ValidationError:
                 raise
         else:

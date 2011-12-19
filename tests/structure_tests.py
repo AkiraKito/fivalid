@@ -194,10 +194,10 @@ class StructuredFieldsTest(TestCase):
         self.validate = StructuredFields.validate
         
         class NameField(BaseField):
-            validators = String()
+            validator = String()
         self.NameField = NameField
         class PhoneNumberField(BaseField):
-            validators = Number()
+            validator = Number()
         self.PhoneNumberField = PhoneNumberField
     
     def test_init(self):
@@ -226,7 +226,7 @@ class StructuredFieldsTest(TestCase):
 
     def test_call_with_field(self):
         class TokenField(BaseField):
-            validators = Any(Equal('C'), Equal('c'))
+            validator = Any(Equal('C'), Equal('c'))
             converter = lambda field, value: value.lower()
         
         stfields = StructuredFields(
@@ -373,10 +373,10 @@ class NestedStructuredFieldTests(TestCase):
         ]
 
         class IDField(BaseField):
-            validators = Number()
+            validator = Number()
             converter = int_converter
         class NameField(BaseField):
-            validators = String()
+            validator = String()
         class ScreenNameField(NameField):
             pass
         rule = Seq(

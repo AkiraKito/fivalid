@@ -21,7 +21,7 @@
         >>> from fivalid import validators, converters
         >>> from fivalid import BaseField
         >>> class PercentageField(BaseField):
-        ...   validators = validators.All(
+        ...   validator = validators.All(
         ...     validators.Number(min=0, max=100),
         ...     validators.String())
         ...   converter = converters.int_converter
@@ -65,11 +65,11 @@
         >>> from fivalid.validators import String, Length, All, Flag
         >>> from converters import truthvalue_converter
         >>> from fivalid import BaseField, 
-        >>> class CommentField(BaseField): validators = All(String(), Length(max=500))
+        >>> class CommentField(BaseField): validator = All(String(), Length(max=500))
         ... 
-        >>> class NicknameField(BaseField): validators = All(String(), Length(max=20))
+        >>> class NicknameField(BaseField): validator = All(String(), Length(max=20))
         ... 
-        >>> class RememberMeField(BaseField): validators = Flag(); converter = truthvalue_converter
+        >>> class RememberMeField(BaseField): validator = Flag(); converter = truthvalue_converter
         ... 
         >>> rule = Dict(
         ...   {'comment': CommentField(required=True),
