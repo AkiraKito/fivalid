@@ -246,7 +246,7 @@ class Equal(Validator):
     """Equal value validator.
     
     `eq_value`
-        If value is equal to `ea_value`, value is "valid". 
+        If value is equal to `eq_value`, value is "valid". 
         
         Note: If *value* type is `str` and `eq_value` type is `unicode`, 
         the *value* to be decode as **UTF-8**.
@@ -340,6 +340,8 @@ class AllowType(Validator):
     `on_exception`
         Exception callback.
         When call occurred exception by `test_type`.
+        
+        Callback function takes *one* argument, it is the exception object.
     """
 
     def __init__(self, test_type, on_exception=None):
