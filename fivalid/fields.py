@@ -102,7 +102,7 @@ class BaseField(object):
             self.apply_validator(value)
         except MissingDefault:
             if self.required:
-                raise RequiredError
+                raise RequiredError()
             else:
                 return None
         except ValueError:
@@ -125,10 +125,10 @@ class BaseField(object):
             # value is empty
             if getattr(self, 'default', None) is None:  # default-value was changed in init?
                 # value and default-value are missing
-                raise MissingDefault
+                raise MissingDefault()
             else:
                 # value is missing, but default_value is available
-                raise ValueError
+                raise ValueError()
 
 
 
