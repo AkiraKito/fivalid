@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    fivalid v0.1.2
+    fivalid v0.1.3
     
     fivalid is lightweight field data validator.
     
@@ -10,12 +10,12 @@
         >>> num = validators.Number(max=20)
         >>> num(10)
         >>> num(21)
-        validators.ValidationError: over max
+        validators.InvalidValueError: over max
         >>> strnum = validators.All(
         ...   validators.Number(), validators.String())
         >>> strnum('100')
         >>> strnum(100)
-        validators.ValidationError: not same type
+        validators.InvalidValueError: not same type
     
     field value validation and conversion:
         >>> from fivalid import BaseField, validators, converters
@@ -28,7 +28,7 @@
         >>> field('99')
         99
         >>> field('200')
-        fivalid.validators.ValidationError: over max
+        fivalid.validators.InvalidValueError: over max
         >>> input_data = {'lightness': '70'}
         >>> lightness_field = PercentageField(empty_value='')
         >>> lightness = lightness_field(input_data.get('lightness', ''))
@@ -76,7 +76,7 @@
         
 """
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 
 from validators import (
@@ -95,7 +95,8 @@ from converters import (
 )
 
 from fields import (
-    ValidationError, ConversionError, RequiredError,
+    ValidationError, InvalidValueError, InvalidTypeError,
+    ConversionError, RequiredError,
     BaseField
 )
 

@@ -260,7 +260,7 @@ class ExtraDataRejection(validators.Validator):
         data, rules = value
         extra_data = set(data.keys()) - set(rules)
         if extra_data:
-            raise validators.ValidationError(
+            raise validators.InvalidValueError(
                 'Found extra data: %s' % extra_data)
 
 class PackAdapter(validators.ValueAdapter):

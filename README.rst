@@ -10,7 +10,7 @@ Features
     >>> num = validators.Number(max=20)
     >>> num(10)
     >>> num(21)
-    validators.ValidationError: over max
+    validators.InvalidValueError: over max
 
 * data validation and conversion
     >>> from fivalid import BaseField, validators, converters
@@ -23,7 +23,7 @@ Features
     >>> field('99')
     99
     >>> field('200')
-    fivalid.validators.ValidationError: over max
+    fivalid.validators.InvalidValueError: over max
 
 * structured data (e.g. nested dict, nested list) validation and conversion
     >>> from fivalid import StructuredFields, Seq, Dict, BaseField

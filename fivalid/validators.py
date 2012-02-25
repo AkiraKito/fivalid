@@ -10,6 +10,16 @@ class ValidationError(BaseException):
     """Error occurred while validation."""
     pass
 
+class InvalidValueError(ValidationError):
+    """Value is invalid."""
+    pass
+
+class InvalidTypeError(ValidationError):
+    """Value type is invalid."""
+    pass
+
+
+
 
 class ValidatorBaseInterface(object):
     """Abstract validator base interface.
@@ -50,8 +60,9 @@ class ValidatorBaseInterface(object):
         raise NotImplementedError
 
     def add(self, other):
-        """Add new validator(s).
+        """Add new validator.
         :param other: Other validator.
+        :raise TypeError: Unacceptable type was given.
         """
 
         if isinstance(other, ValidatorBaseInterface):
@@ -60,7 +71,8 @@ class ValidatorBaseInterface(object):
             except AttributeError:
                 raise
         else:
-            raise TypeError
+            raise TypeError('Argument is not subclass of %s.'\
+                    % ValidatorBaseInterface.__class__.__name__)
 
     def remove(self, other):
         """Remove a validator.
@@ -201,18 +213,18 @@ class Number(Validator):
         """Validate the value.
 
         :param value: String of a number.
-        :raise ValidationError: value is invalid.
+        :raise InvalidValueError: `value` is invalid.
         """
         try:
             value = float(value)
         except ValueError, e:
-            raise ValidationError(e)
+            raise InvalidValueError(e)
         if self.max is not None:
             if not (value <= self.max):
-                raise ValidationError('over max')
+                raise InvalidValueError('over max')
         if self.min is not None:
             if not (value >= self.min):
-                raise ValidationError('less than min')
+                raise InvalidValueError('less than min')
 
 
 class FreeText(Validator):
@@ -223,8 +235,8 @@ class FreeText(Validator):
     
     `ignore_chars`
         List of ignore string.
-        If ignore string is found in value, erase from the value
-        before check ban phrases.
+        If ignore string is found in value, erase from the value 
+        when before check ban phrases.
     """
 
     def __init__(self, ban_phrases=None, ignore_chars=None):
@@ -234,12 +246,12 @@ class FreeText(Validator):
 
     def validate(self, value):
         if not isinstance(value, basestring):
-            raise ValidationError('not string')
+            raise InvalidTypeError('not string')
         for ignore in self.ignore_chars:
             value = re.sub(ignore, '', value)
         for phrase in self.ban_phrases:
             if re.search(phrase, value) is not None:
-                raise ValidationError('ban phrase found')
+                raise InvalidValueError('ban phrase found')
 
 
 class Equal(Validator):
@@ -260,19 +272,25 @@ class Equal(Validator):
         if (not isinstance(value, basestring)) or \
                 (not isinstance(self.eq_value, basestring)):
             if self.eq_value != value:
-                raise ValidationError('%s is not equal' % value)
+                raise InvalidValueError('%s is not equal' % value)
         elif isinstance(value, unicode):
-            if isinstance(self.eq_value, unicode):
-                if self.eq_value != value:
-                    raise ValidationError('%s is not equal' % value)
-            elif self.eq_value.decode('utf-8') != value:
-                raise ValidationError('%s is not equal' % value)
+            try:
+                if isinstance(self.eq_value, unicode):
+                    if self.eq_value != value:
+                        raise InvalidValueError('%s is not equal' % value)
+                elif self.eq_value.decode('utf-8') != value:
+                    raise InvalidValueError('%s is not equal' % value)
+            except UnicodeDecodeError, e:
+                raise InvalidValueError(e)
         else:
             if isinstance(self.eq_value, unicode):
-                if self.eq_value != value.decode('utf-8'):
-                    raise ValidationError('%s is not equal' % value)
+                try:
+                    if self.eq_value != value.decode('utf-8'):
+                        raise InvalidValueError('%s is not equal' % value)
+                except UnicodeDecodeError, e:
+                    raise InvalidValueError(e)
             elif self.eq_value != value:
-                raise ValidationError('%s is not equal' % value)
+                raise InvalidValueError('%s is not equal' % value)
 
 
 class Regex(Validator):
@@ -320,14 +338,13 @@ class Regex(Validator):
         if self.regexp is None:
             raise ValidationError('missing regexp')
         if not isinstance(value, basestring):
-            raise ValidationError('value is invalid')
+            raise InvalidTypeError('value is invalid')
         regex_method = re.match if self.is_match else re.search
-        if self.flags is None:
-            if regex_method(self.regexp, value) is None:
-                raise ValidationError('not found')
-        else:
-            if regex_method(self.regexp, value, self.flags) is None:
-                raise ValidationError('not found')
+        regex_result = regex_method(self.regexp, value)\
+                if self.flags is None\
+                else regex_method(self.regexp, value, self.flags)
+        if regex_result is None:
+            raise InvalidValueError('not found')
 
 
 class AllowType(Validator):
@@ -353,13 +370,13 @@ class AllowType(Validator):
         if callable(self.test_type):
             try:
                 self.test_type(value)
-            except TypeError:
-                raise ValidationError('not allowed')
+            except TypeError, e:
+                raise InvalidTypeError(e)
             except Exception, e:
                 if callable(self.on_exception):
                     self.on_exception(e)
                 else:
-                    raise ValidationError('not allowed')
+                    raise InvalidValueError(e)
         else:
             raise ValidationError('type is invalid')
 
@@ -372,13 +389,18 @@ class Prefix(Validator):
     """
 
     def __init__(self, prefix):
-        self.prefix = str(prefix)
+        if isinstance(prefix, basestring):
+            self.prefix = prefix
+        else:
+            self.prefix = str(prefix)
         super(Prefix, self).__init__(prefix)
 
     def validate(self, value):
-        v = str(value)
-        if not v.startswith(self.prefix):
-            raise ValidationError('not found')
+        if not isinstance(value, basestring):
+            value = str(value)
+        if not value.startswith(self.prefix):
+            raise InvalidValueError(
+                    'prefix %s is not found' % self.prefix)
 
 
 class Type(Validator):
@@ -394,7 +416,7 @@ class Type(Validator):
 
     def validate(self, value):
         if not isinstance(value, self.value_type):
-            raise ValidationError('not same type')
+            raise InvalidTypeError('not same type')
 
 
 class Length(Validator):
@@ -414,10 +436,10 @@ class Length(Validator):
     def validate(self, value):
         if self.max_length is not None:
             if not (len(value) <= int(self.max_length)):
-                raise ValidationError('over max length')
+                raise InvalidValueError('over max length')
         if self.min_length >= 0:
             if not (len(value) >= int(self.min_length)):
-                raise ValidationError('less than min length')
+                raise InvalidValueError('less than min length')
 
 
 class Split(Validator):
@@ -462,16 +484,13 @@ class Split(Validator):
             try:
                 value = unicode(value)
             except UnicodeDecodeError:
-                try:
-                    value = value.decode('utf-8')
-                except UnicodeDecodeError:
-                    raise ValidationError('Value is not UTF-8.')
+                raise InvalidValueError('Value can not decode to unicode.')
         if self.rmatch:
             splited = value.rsplit(self.separator, len(self.validators) - 1)
         else:
             splited = value.split(self.separator, len(self.validators) - 1)
         if len(splited) != len(self.validators):
-            raise ValidationError('Number of splited value is mismatch.')
+            raise InvalidValueError('Number of splited value is mismatch.')
         for validator, token in itertools.izip(self.validators, splited):
             validator(token)
 
@@ -488,7 +507,8 @@ class OnelinerText(FreeText):
         ban = [u'\n']
         if isinstance(ban_phrases, list):
             ban.extend(ban_phrases)
-        super(OnelinerText, self).__init__(ban_phrases=ban, ignore_chars=ignore_chars)
+        super(OnelinerText, self).__init__(
+                ban_phrases=ban, ignore_chars=ignore_chars)
 
 
 class String(Type):

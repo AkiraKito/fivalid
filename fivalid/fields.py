@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from validators import ValidationError
+from validators import (
+    ValidationError,
+    InvalidValueError,
+    InvalidTypeError
+)
 from converters import ConversionError, unicode_converter
 
 
@@ -26,7 +30,7 @@ class BaseField(object):
         >>> name = field()  # with required flag
         RequiredError
         >>> name = field('John Doeeeee')
-        ValidationError
+        InvalidValueError
         >>> name = field('Jane Doe')
         >>> print name
         u'Jane Doe'
