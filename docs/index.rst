@@ -24,13 +24,21 @@ Contents:
     structures.rst
 
 
-exceptions
+Exceptions
 ----------
-.. autoexception:: __init__.RequiredError
+.. autoexception:: fields.RequiredError
 
-.. autoexception:: __init__.ValidationError
+.. autoexception:: validators.ValidationError
 
-.. autoexception:: __init__.ConversionError
+.. autoexception:: validators.InvalidValueError
+    
+    Subclass of :exc:`validators.ValidationError`
+
+.. autoexception:: validators.InvalidTypeError
+    
+    Subclass of :exc:`validators.ValidationError`
+
+.. autoexception:: converters.ConversionError
 
 
 
