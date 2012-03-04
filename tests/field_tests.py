@@ -26,12 +26,13 @@ from converters import (
 
 
 
-def basefield_test():
+def validation_and_conversion_test():
     f = BaseField(validator=All(Number(min=3), Length(max=10)))
     value = f('7')
     assert isinstance(value, unicode)
     assert value == u'7'
 
+def default_test():
     f = BaseField(default=12334, validator=Any(Equal('x'), Int()))
     value = f(1)
     assert isinstance(value, unicode)
@@ -39,16 +40,18 @@ def basefield_test():
     value = f(None)
     assert value == u'12334'
 
-    f3 = BaseField(validator=Equal('m'), empty_value='')
-    value = f3('')
+def empty_value_test():
+    f = BaseField(validator=Equal('m'), empty_value='')
+    value = f('')
     assert value is None
     try:
-        f3('x')
+        f('x')
     except ValidationError:
         pass
     else:
         raise AssertionError
 
+def required_test():
     freq = BaseField(required=True, validator=Equal('zx'))
     try:
         freq(None)
@@ -57,6 +60,7 @@ def basefield_test():
     else:
         raise AssertionError
 
+def replace_converter_test():
     rconv = BaseField(validator=Equal('mmm'))
     from functools import partial
     rconv.converter = partial(int_converter, rconv) # DO NOT normally use!
