@@ -61,9 +61,7 @@ def required_test():
         raise AssertionError
 
 def replace_converter_test():
-    rconv = BaseField(validator=Equal('mmm'))
-    from functools import partial
-    rconv.converter = partial(int_converter, rconv) # DO NOT normally use!
+    rconv = BaseField(validator=Equal('mmm'), converter=int_converter)
     try:
         rconv('mmm')
     except ConversionError:

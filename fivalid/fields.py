@@ -8,6 +8,8 @@ from validators import (
 )
 from converters import ConversionError, unicode_converter
 
+from functools import partial
+
 
 class RequiredError(BaseException):
     """`required` flag is True and missing input value in `field`."""
@@ -65,6 +67,9 @@ class BaseField(object):
         If this argument was given, to replace default validator by one.
         
         A *instance* of subclass of :class:`~validators.ValidatorBaseInterface`.
+    
+    `converter`
+        If this argument was given, to replace default converter by one.
     """
 
     validator = None
@@ -74,10 +79,13 @@ class BaseField(object):
                  default=None,
                  required=False,
                  empty_value=None,
-                 validator=None):
+                 validator=None,
+                 converter=None):
         self.empty_value = empty_value
         if validator is not None:
             self.validator = validator
+        if converter is not None:
+            self.converter = partial(converter, self)
         self.required = required 
         if default is None:
             self.default = default
@@ -133,6 +141,5 @@ class BaseField(object):
             else:
                 # value is missing, but default_value is available
                 raise ValueError()
-
 
 
