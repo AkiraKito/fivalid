@@ -26,12 +26,16 @@ Features
     fivalid.validators.InvalidValueError: over max
 
 * structured data (e.g. nested dict, nested list) validation and conversion
-    >>> from fivalid import StructuredFields, Seq, Dict, BaseField
+    >>> from fivalid import StructuredFields, Dict, BaseField
     >>> from fivalid.validators import String, Length, All, Flag
     >>> from fivalid.converters import truthvalue_converter
-    >>> class CommentField(BaseField): validator = All(String(), Length(max=500))
-    >>> class NicknameField(BaseField): validator = All(String(), Length(max=20))
-    >>> class RememberMeField(BaseField): validator = Flag(); converter = truthvalue_converter
+    >>> class CommentField(BaseField):
+    ...   validator = All(String(), Length(max=500))
+    >>> class NicknameField(BaseField):
+    ...   validator = All(String(), Length(max=20))
+    >>> class RememberMeField(BaseField):
+    ...   validator = Flag()
+    ...   converter = truthvalue_converter
     >>> rule = Dict(
     ...   {'comment': CommentField(required=True),
     ...    'nickname': NicknameField(),
@@ -40,6 +44,7 @@ Features
     >>> stfields = StructuredFields(rule)
     >>> stfields({'comment': 'Hello, fivalid.',
     ...           'nickname': 'John Doe',
-    ...           'remember me': '1'})
+    ...           'remember me': '1'}
+    ... )
     {'comment': u'Hello, fivalid.', 'nickname': u'John Doe', 'remember me': True}
 
