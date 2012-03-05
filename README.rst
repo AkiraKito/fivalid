@@ -10,7 +10,7 @@ Features
     >>> num = validators.Number(max=20)
     >>> num(10)
     >>> num(21)
-    validators.InvalidValueError: over max
+    fivalid.validators.InvalidValueError: over max
 
 * data validation and conversion
     >>> from fivalid import BaseField, validators, converters
