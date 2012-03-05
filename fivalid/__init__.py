@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """
-    fivalid v0.1.3
-    
     fivalid is lightweight field data validator.
     
     validation:
@@ -76,7 +74,7 @@
         
 """
 
-__version__ = '0.1.3'
+__version__ = '0.2.0a1'
 
 
 from validators import (
