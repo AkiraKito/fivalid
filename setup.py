@@ -5,10 +5,11 @@ try:
 except ImportError:
     from distutils.core import setup
 
+version = __import__('fivalid').__version__
 
 setup(
     name='fivalid',
-    version='0.1.3',
+    version=version,
     license='BSD',
     author='Akira Kito',
     description='Lightweight field data validator.',
