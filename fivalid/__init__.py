@@ -37,8 +37,8 @@
         >>> print lightness
         None
     
-    data structure validation (same data structure will be return, but *all values* are :obj:`None`. because it's **validation only** use):
-        >>> from fivalid import StructuredFields, Seq, Dict
+    data structure validation (same as the input data structure will be return, but *all values* are :obj:`None`. because it's **only for the purpose of validation**):
+        >>> from fivalid import StructuredFields, Dict
         >>> from fivalid.validators import String, Length, All, Flag
         >>> rule = Dict(
         ...   {'comment': All(String(), Length(max=500)),
@@ -55,12 +55,16 @@
         {'comment': None, 'nickname': None, 'remember me': None}
     
     data structure validation and conversion:
-        >>> from fivalid import StructuredFields, Seq, Dict, BaseField
+        >>> from fivalid import StructuredFields, Dict, BaseField
         >>> from fivalid.validators import String, Length, All, Flag
         >>> from fivalid.converters import truthvalue_converter
-        >>> class CommentField(BaseField): validator = All(String(), Length(max=500))
-        >>> class NicknameField(BaseField): validator = All(String(), Length(max=20))
-        >>> class RememberMeField(BaseField): validator = Flag(); converter = truthvalue_converter
+        >>> class CommentField(BaseField):
+        ...   validator = All(String(), Length(max=500))
+        >>> class NicknameField(BaseField):
+        ...   validator = All(String(), Length(max=20))
+        >>> class RememberMeField(BaseField):
+        ...   validator = Flag()
+        ...   converter = truthvalue_converter
         >>> rule = Dict(
         ...   {'comment': CommentField(required=True),
         ...    'nickname': NicknameField(),
@@ -69,9 +73,26 @@
         >>> stfields = StructuredFields(rule)
         >>> stfields({'comment': 'Hello, fivalid.',
         ...           'nickname': 'John Doe',
-        ...           'remember me': '1'})
+        ...           'remember me': '1'}
+        ... )
         {'comment': u'Hello, fivalid.', 'nickname': u'John Doe', 'remember me': True}
         
+    comparation of the validator:
+        >>> from fivalid.validators import Length, All, String
+        >>> assert Length(max=10) == Length(max=10)
+        >>> assert Length(max=10) != Length(min=4)
+        >>> assert All(Length(min=3), String()) == All(Length(min=3), String())
+        >>> assert All(Length(min=3), String()) != All(Length(min=1), String())
+    
+    replace the validator and/or converter without inheritance:
+        >>> from fivalid.validators import Flag
+        >>> from fivalid.converters import truthvalue_converter
+        >>> from fivalid.fields import BaseField
+        >>> field = BaseField(validator=Flag(),
+        ...                   converter=truthvalue_converter)
+        >>> field('1')
+        True
+    
 """
 
 __version__ = '0.2.0a1'
