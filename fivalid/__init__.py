@@ -99,13 +99,15 @@ __version__ = '0.2.0a1'
 
 
 from validators import (
+    ValidationError, InvalidValueError, InvalidTypeError,
     All, Any, ValueAdapter,
     Validator,
-    Number, FreeText, Equal, Regex, AllowType, Prefix, Type, Length,
+    Number, FreeText, Equal, Regex, AllowType, Prefix, Type, Length, Split,
     OnelinerText, String, Int, SortOrder, Flag
 )
 
 from converters import (
+    ConversionError,
     unicode_converter,
     float_converter,
     int_converter,
@@ -114,8 +116,7 @@ from converters import (
 )
 
 from fields import (
-    ValidationError, InvalidValueError, InvalidTypeError,
-    ConversionError, RequiredError,
+    RequiredError,
     BaseField
 )
 
