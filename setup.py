@@ -12,6 +12,7 @@ setup(
     version=version,
     license='BSD',
     author='Akira Kito',
+    url='https://github.com/AkiraKito/fivalid',
     description='Lightweight field data validator.',
     long_description=open('README.rst').read(),
     packages=['fivalid'],
