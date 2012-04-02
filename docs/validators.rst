@@ -12,19 +12,24 @@ Validators
 .. autoclass:: validators.ValueAdapter
     :members: on_adapt
 
+.. autoclass:: validators.Not
+
 .. autoclass:: validators.Failure
 
 .. autoclass:: validators.Pass
 
 .. autoclass:: validators.Number
+    :members:
 
 .. autoclass:: validators.FreeText
 
 .. autoclass:: validators.Equal
 
 .. autoclass:: validators.Regex
+    :members: __init__
 
 .. autoclass:: validators.AllowType
+    :members: __init__
 
 .. autoclass:: validators.Prefix
 

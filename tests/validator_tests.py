@@ -164,8 +164,7 @@ def equal_test():
 
 
 def regex_test():
-    verr = Regex(1)
-    err(verr, 'abc')
+    err(Regex, 1, TypeError)
 
     vterr = Regex('hoge')
     err(vterr, 100, InvalidTypeError)
@@ -190,6 +189,8 @@ def regex_test():
 
 
 def allowtype_test():
+    err(AllowType, [], ValueError)
+
     v = AllowType(int)
     suc(v, 1)
     suc(v, '4423')

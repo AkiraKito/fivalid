@@ -331,10 +331,14 @@ class Regex(Validator):
     """
 
     def __init__(self, regexp, is_match=True, flags=None):
+        """Constractor.
+        
+        :raises TypeError: `regexp` is not string.
+        """
         if isinstance(regexp, basestring):
             self.regexp = regexp
         else:
-            self.regexp = None
+            raise TypeError('regexp is not string')
         self.is_match = is_match
         if isinstance(flags, (list, tuple, set, frozenset, basestring)):
             self.flags = 0
@@ -348,8 +352,6 @@ class Regex(Validator):
             self.flags = None
 
     def validate(self, value):
-        if self.regexp is None:
-            raise ValidationError('missing regexp')
         if not isinstance(value, basestring):
             raise InvalidTypeError('value is invalid')
         regex_method = re.match if self.is_match else re.search
@@ -379,23 +381,26 @@ class AllowType(Validator):
     """
 
     def __init__(self, test_type, on_exception=None):
+        """Constractor.
+        
+        :raises ValueError: `test_type` is not callable.
+        """
         super(AllowType, self).__init__(test_type)
+        if not callable(test_type):
+            raise ValueError('`test_type` is not callable.')
         self.test_type = test_type
         self.on_exception = on_exception
 
     def validate(self, value):
-        if callable(self.test_type):
-            try:
-                self.test_type(value)
-            except TypeError, e:
-                raise InvalidTypeError(e)
-            except Exception, e:
-                if callable(self.on_exception):
-                    self.on_exception(e)
-                else:
-                    raise InvalidValueError(e)
-        else:
-            raise ValidationError('type is invalid')
+        try:
+            self.test_type(value)
+        except TypeError, e:
+            raise InvalidTypeError(e)
+        except Exception, e:
+            if callable(self.on_exception):
+                self.on_exception(e)
+            else:
+                raise InvalidValueError(e)
 
 
 class Prefix(Validator):
