@@ -5,14 +5,16 @@ fivalid is lightweight field data validator.
 
 Features
 --------
-* data validation
+data validation::
+    
     >>> from fivalid import validators
     >>> num = validators.Number(max=20)
     >>> num(10)
     >>> num(21)
     fivalid.validators.InvalidValueError: over max
 
-* data validation and conversion
+data validation and conversion::
+    
     >>> from fivalid import BaseField, validators, converters
     >>> class PercentageField(BaseField):
     ...   validator = validators.All(
@@ -25,7 +27,8 @@ Features
     >>> field('200')
     fivalid.validators.InvalidValueError: over max
 
-* structured data (e.g. nested dict, nested list) validation and conversion
+structured data (e.g. nested dict, nested list) validation and conversion::
+    
     >>> from fivalid import StructuredFields, Dict, BaseField
     >>> from fivalid.validators import String, Length, All, Flag
     >>> from fivalid.converters import truthvalue_converter

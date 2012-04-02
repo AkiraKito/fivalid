@@ -3,7 +3,8 @@
 """
     fivalid is lightweight field data validator.
     
-    validation:
+    validation::
+        
         >>> from fivalid import validators
         >>> num = validators.Number(max=20)
         >>> num(10)
@@ -15,7 +16,8 @@
         >>> strnum(100)
         validators.InvalidValueError: not same type
     
-    field value validation and conversion:
+    field value validation and conversion::
+        
         >>> from fivalid import BaseField, validators, converters
         >>> class PercentageField(BaseField):
         ...   validator = validators.All(
@@ -37,7 +39,8 @@
         >>> print lightness
         None
     
-    data structure validation (same as the input data structure will be return, but *all values* are :obj:`None`. because it's **only for the purpose of validation**):
+    data structure validation (same as the input data structure will be return, but *all values* are :obj:`None`. because it's **only for the purpose of validation**)::
+        
         >>> from fivalid import StructuredFields, Dict
         >>> from fivalid.validators import String, Length, All, Flag
         >>> rule = Dict(
@@ -54,7 +57,8 @@
         >>> StructuredFields.validate(data, rule) # same as
         {'comment': None, 'nickname': None, 'remember me': None}
     
-    data structure validation and conversion:
+    data structure validation and conversion::
+        
         >>> from fivalid import StructuredFields, Dict, BaseField
         >>> from fivalid.validators import String, Length, All, Flag
         >>> from fivalid.converters import truthvalue_converter
@@ -77,14 +81,16 @@
         ... )
         {'comment': u'Hello, fivalid.', 'nickname': u'John Doe', 'remember me': True}
         
-    comparation of the validator:
+    comparation of the validator::
+        
         >>> from fivalid.validators import Length, All, String
         >>> assert Length(max=10) == Length(max=10)
         >>> assert Length(max=10) != Length(min=4)
         >>> assert All(Length(min=3), String()) == All(Length(min=3), String())
         >>> assert All(Length(min=3), String()) != All(Length(min=1), String())
     
-    replace the validator and/or converter without inheritance:
+    replace the validator and/or converter without inheritance::
+        
         >>> from fivalid.validators import Flag
         >>> from fivalid.converters import truthvalue_converter
         >>> from fivalid.fields import BaseField
