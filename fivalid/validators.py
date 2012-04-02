@@ -20,7 +20,6 @@ class InvalidTypeError(ValidationError):
 
 
 
-
 class ValidatorBaseInterface(object):
     """Abstract validator base interface.
     
@@ -166,7 +165,11 @@ class Validator(ValidatorBaseInterface):
 
 
 class Not(Validator):
-    """NOT operation for validator."""
+    """NOT operation for validator.
+    
+    :raises ValidationError: Not raised :exc:`ValidationError` from 
+                             the validator given at initialization.
+    """
     
     def __init__(self, validator):
         super(Not, self).__init__(validator)
@@ -182,7 +185,10 @@ class Not(Validator):
 
 
 class Failure(Validator):
-    """Surely fail validator."""
+    """Surely fail validator.
+    
+    :raises ValidationError: Always the exception raises.
+    """
     
     def validate(self, value):
         raise ValidationError('Surely fail')
@@ -198,10 +204,8 @@ class Pass(Validator):
 class Number(Validator):
     """Number validator.
 
-    `min`
-        min of valid value.
-    `max`
-        max of valid value.
+    :param min: Min of valid value.
+    :param max: Max of valid value.
     """
 
     def __init__(self, min=None, max=None):
@@ -230,13 +234,15 @@ class Number(Validator):
 class FreeText(Validator):
     """Free text validator.
     
-    `ban_phrases`
-        List of ban phrase.
+    :param ban_phrases: List of ban phrase.
+    :type ban_phrases: List of string.
     
-    `ignore_chars`
-        List of ignore string.
-        If ignore string is found in value, erase from the value 
-        when before check ban phrases.
+    :param ignore_chars: List of ignore string. 
+                         If ignore string is found in value, erase from the value 
+                         when before check ban phrases.
+    
+    :raises InvalidTypeError: The type of given value is not string.
+    :raises InvalidValueError: Ban phrase is found in the value.
     """
 
     def __init__(self, ban_phrases=None, ignore_chars=None):
@@ -257,11 +263,15 @@ class FreeText(Validator):
 class Equal(Validator):
     """Equal value validator.
     
-    `eq_value`
-        If value is equal to `eq_value`, value is "valid". 
-        
-        Note: If *value* type is `str` and `eq_value` type is `unicode`, 
-        the *value* to be decode as **UTF-8**.
+    :param eq_value: If the value is the same as 
+                     `eq_value` is evaluated as "valid".
+
+    .. note::
+        If type of *value* is `str` and type of `eq_value` is `unicode`, 
+        the *value* is treated as **UTF-8** string.
+
+    :raises InvalidValueError: The value is not equal to `eq_value` 
+                               or Failed decode `eq_value` to UTF-8.
     """
 
     def __init__(self, eq_value):
@@ -272,49 +282,52 @@ class Equal(Validator):
         if (not isinstance(value, basestring)) or \
                 (not isinstance(self.eq_value, basestring)):
             if self.eq_value != value:
-                raise InvalidValueError('%s is not equal' % value)
+                raise InvalidValueError(
+                    '%s is not equal to %s' % (value, self.eq_value))
         elif isinstance(value, unicode):
             try:
                 if isinstance(self.eq_value, unicode):
                     if self.eq_value != value:
-                        raise InvalidValueError('%s is not equal' % value)
+                        raise InvalidValueError(
+                            '%s is not equal to %s' % (value, self.eq_value))
                 elif self.eq_value.decode('utf-8') != value:
-                    raise InvalidValueError('%s is not equal' % value)
+                    raise InvalidValueError(
+                        '%s is not equal to %s' % (value, self.eq_value))
             except UnicodeDecodeError, e:
                 raise InvalidValueError(e)
         else:
             if isinstance(self.eq_value, unicode):
                 try:
                     if self.eq_value != value.decode('utf-8'):
-                        raise InvalidValueError('%s is not equal' % value)
+                        raise InvalidValueError(
+                            '%s is not equal to %s' % (value, self.eq_value))
                 except UnicodeDecodeError, e:
                     raise InvalidValueError(e)
             elif self.eq_value != value:
-                raise InvalidValueError('%s is not equal' % value)
+                raise InvalidValueError(
+                    '%s is not equal to %s' % (value, self.eq_value))
 
 
 class Regex(Validator):
     """Value validation by regexp.
     
-    `regexp`
-        Regular expression.
-    
-    `is_match`
-        If True, use :func:`re.match`.
-        Otherwise use :func:`re.search`.
-        
-        This flag is True by default.
-    
-    `flags`
-        Sequence of flags.
-        Acceptable types are: list, tuple, set, frozenset, basestring
-        
-        * "i": :data:`re.IGNORECASE`
-        * "l": :data:`re.LOCALE`
-        * "m": :data:`re.MULTILINE`
-        * "s": :data:`re.DOTALL`
-        * "u": :data:`re.UNICODE`
-        * "x": :data:`re.VERBOSE`
+    :param regexp: Regular expression.
+    :param is_match: If True, use :func:`re.match`.
+                     Otherwise use :func:`re.search`.
+                     
+                     This flag is True by default.
+    :param flags: Sequence of flags.
+                  Acceptable types are: :class:`list`, :class:`tuple`, 
+                  :class:`set`, :class:`frozenset`, :class:`basestring`
+                  
+                  * "i": :data:`re.IGNORECASE`
+                  * "l": :data:`re.LOCALE`
+                  * "m": :data:`re.MULTILINE`
+                  * "s": :data:`re.DOTALL`
+                  * "u": :data:`re.UNICODE`
+                  * "x": :data:`re.VERBOSE`
+
+    :raises InvalidValueError: Regexp pattern is not found in the value.
     """
 
     def __init__(self, regexp, is_match=True, flags=None):
@@ -344,21 +357,25 @@ class Regex(Validator):
                 if self.flags is None\
                 else regex_method(self.regexp, value, self.flags)
         if regex_result is None:
-            raise InvalidValueError('not found')
+            raise InvalidValueError('pattern %s is not found' % self.regexp)
 
 
 class AllowType(Validator):
     """Is TYPE allowed the value?
     
-    `test_type`
-        Callable.
-        If raise exception when call this, value is "invalid".
+    :param test_type: *Callable*. 
+                      If raise exception when call this, 
+                      value is evaluated as "invalid".
     
-    `on_exception`
-        Exception callback.
-        When call occurred exception by `test_type`.
-        
-        Callback function takes *one* argument, it is the exception object.
+    :param on_exception: Exception callback function. 
+                         When call occurred exception by `test_type`.
+                         
+                         Callback function takes *one* argument, 
+                         it is the exception object.
+
+    :raises InvalidTypeError: Type `test_type` can't accept the value.
+    :raises InvalidValueError: Not available `on_exception` callback 
+                               and exception is occurred from `test_type`.
     """
 
     def __init__(self, test_type, on_exception=None):
@@ -384,8 +401,10 @@ class AllowType(Validator):
 class Prefix(Validator):
     """Prefix validator.
     
-    `prefix`
-        If value that starts from `prefix`, evaluate the value as "valid".
+    :param prefix: If value that starts from `prefix`, 
+                   evaluate the value as "valid".
+
+    :raises InvalidValueError: The value is not prefixed.
     """
 
     def __init__(self, prefix):
@@ -404,10 +423,12 @@ class Prefix(Validator):
 
 
 class Type(Validator):
-    """Value type validator.
+    """Type of the value validator.
     
-    `value_type`
-        Expected type of the value.
+    :param value_type: Expected type of the value.
+
+    :raises InvalidTypeError: Type of the value is 
+                              not same as `value_type`.
     """
 
     def __init__(self, value_type):
@@ -420,12 +441,13 @@ class Type(Validator):
 
 
 class Length(Validator):
-    """Limit length.
+    """Limitation of length.
     
-    `min`
-        min length.
-    `max`
-        max length.
+    :param min: Min length.
+    :param max: Max length.
+
+    :raises InvalidValueError: Value has exceeded 
+                               the limit of the length.
     """
 
     def __init__(self, min=0, max=None):
@@ -450,25 +472,26 @@ class Split(Validator):
         >>> model_number = Split(Equal('HVC'), console, sep='-')
         >>> model_number('HVC-001')
         >>> model_number('HVC-002')
-        validators.ValidationError: 002 is not equal
+        validators.InvalidValueError: 002 is not equal to 001
     
-    `*validators`
-        Validator for splited values.
-        
-        Number of *validators* have to same as number of part of splited values.
+    :param *validators: Validator for splitted values.
+                        
+                        Number of *validators* have to same as 
+                        number of part of splited values.
+    :param sep: Value separator character.
+                
+                Value will be split by this separator string.
+    :param rmatch: Right match flag.
+                   
+                   If this flag is :obj:`True`, 
+                   to apply validator from *right side*. 
+                   Otherwise, to apply validator from *left side*.
+                   
+                   :obj:`False` by default.
     
-    `sep`
-        Value separator.
-        
-        Value will be split by this separator string.
-    
-    `rmatch`
-        Right match flag.
-        
-        If this flag is :obj:`True`, to apply validator from *right side*. 
-        Otherwise, to apply validator from *left side*.
-        
-        :obj:`False` by default.
+    :raises InvalidValueError: The value can't decode to unicode 
+                               or number of splitted values and 
+                               number of validators does not match.
     """
     
     def __init__(self, *validators, **options):
@@ -490,7 +513,7 @@ class Split(Validator):
         else:
             splited = value.split(self.separator, len(self.validators) - 1)
         if len(splited) != len(self.validators):
-            raise InvalidValueError('Number of splited value is mismatch.')
+            raise InvalidValueError('Number of splitted value is mismatch.')
         for validator, token in itertools.izip(self.validators, splited):
             validator(token)
 
@@ -501,6 +524,9 @@ class OnelinerText(FreeText):
     """Free text without linefeed code.
     
     Arguments are the same as :class:`~validators.FreeText`.
+
+    :raises InvalidTypeError: The type of given value is not string.
+    :raises InvalidValueError: Ban phrase is found in the value.
     """
 
     def __init__(self, ban_phrases=None, ignore_chars=None):
@@ -512,14 +538,20 @@ class OnelinerText(FreeText):
 
 
 class String(Type):
-    """String type only."""
+    """String type only.
+    
+    :raises InvalidTypeError: The type of value is not string.
+    """
 
     def __init__(self):
         super(String, self).__init__(basestring)
 
 
 class Int(Type):
-    """Int type only."""
+    """Int type only.
+    
+    :raises InvalidTypeError: The type of value is not int.
+    """
 
     def __init__(self):
         super(Int, self).__init__(int)
@@ -529,10 +561,14 @@ class SortOrder(Any):
     """Sort order validator.
     
     Acceptable value:
-        ``asc``:
+        ``asc``
             ascending order.
-        ``desc``:
+        
+        ``desc``
             descending order.
+    
+    :raises InvalidValueError: The value is not equal to 
+                               ``asc`` or ``desc``.
     """
     
     def __init__(self):
@@ -540,7 +576,17 @@ class SortOrder(Any):
 
 
 class Flag(Any):
-    """Flag validator."""
+    """Flag validator.
+    
+    "true" and "t" and "1" as :obj:`True`.
+    
+    "false" and "f" and "0" as :obj:`False`.
+    
+    .. note::
+        The value ignore case.
+    
+    :raises InvalidValueError: Not allowed value was given.
+    """
 
     def __init__(self):
         super(Flag, self).__init__(Equal(u'true'), Equal(u't'), Equal(u'1'),
