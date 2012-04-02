@@ -472,7 +472,8 @@ class Length(Validator):
 class Split(Validator):
     """Split value validator.
     
-    usage:
+    usage::
+        
         >>> console = Any(Equal('001'), Equal('101'))
         >>> model_number = Split(Equal('HVC'), console, sep='-')
         >>> model_number('HVC-001')

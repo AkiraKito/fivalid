@@ -21,7 +21,8 @@ class StructuredFields(object):
     
     *Leaf node* of the rule structure have to set *Field* or *Validator*.
     
-    usage:
+    usage::
+        
         >>> import validators
         >>> data = {
         ...   'binary': (0,1)
@@ -168,17 +169,17 @@ class Seq(StructureRule):
     """Sequence of rules.
     
     Get a rule in the order they were given at one time, 
-    and endless repeat the pattern.:
+    and endless repeat the pattern.::
+        
         >>> rule = Seq(Number(), String())
         >>> for i in range(4):
         ...   type(rule[i])
-        ... 
         <class 'fivalid.validators.Number'>
         <class 'fivalid.validators.String'>
         <class 'fivalid.validators.Number'>
         <class 'fivalid.validators.String'>
     
-    :param *rules: :class:`~structures.Seq`, :class:`~structures.Dict`, 
+    :param \*rules: :class:`~structures.Seq`, :class:`~structures.Dict`, 
                    Validators, and Fields.
     :keyword type: A type of sequence object of validation target.
                    
@@ -213,7 +214,8 @@ class Seq(StructureRule):
     def insert(self, rule, ident=None):
         """Insert a rule into rule set.
         
-        usage:
+        usage::
+            
             >>> rule = Seq(Equal('x'))
             >>> rule.insert(Equal('y'))
             >>> assert rule[1] == Equal('y')
@@ -236,7 +238,8 @@ class Seq(StructureRule):
     def get(self, ident):
         """Pattern repeat rule getter.
         
-        usage:
+        usage::
+            
             >>> rule = Seq(Equal('a'), Equal('b'))
             >>> assert rule.get(0) == Equal('a')
             >>> assert rule.get(1) == Equal('b')

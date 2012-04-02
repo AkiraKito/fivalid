@@ -23,7 +23,8 @@ class MissingDefault(BaseException):
 class BaseField(object):
     """Basic field validator and converter set.
     
-    usage:
+    usage::
+        
         >>> from validators import OnelinerText, Length, All
         >>> class NameField(BaseField):
         ...   validator = All(OnelinerText(), Length(max=10))
@@ -41,7 +42,6 @@ class BaseField(object):
         None
         >>> field('R2-D2')
         u'R2-D2'
-        >>> 
     
     .. note::
         You have to set validator to :attr:`BaseField.validator`. Because default is :obj:`None`.
