@@ -55,7 +55,6 @@ class StructuredFields(object):
         {'binary': (u'0', u'1'), 'quaternary': [u'0', u'1', u'2', u'3']}
         >>> StructuredFields.validate(data, rule)
         {'binary': (u'0', u'1'), 'quaternary': [u'0', u'1', u'2', u'3']}
-        >>> 
     """
     
     def __init__(self, rule, empty_value=None):
@@ -121,7 +120,11 @@ class StructureRule(object):
         self.data_validator = validators.Type(options.pop('type', None))
 
     def __call__(self, value):
-        """Compatible interface for Field and Validator."""
+        """Compatible interface for Field and Validator.
+        
+        :param value: Validatee value.
+        :raises InvalidTypeError: Unexpected type (of the value) was given.
+        """
         self.data_validator(value)
 
     def __len__(self):
@@ -174,11 +177,10 @@ class Seq(StructureRule):
         <class 'fivalid.validators.String'>
         <class 'fivalid.validators.Number'>
         <class 'fivalid.validators.String'>
-        >>> 
     
     :param *rules: :class:`~structures.Seq`, :class:`~structures.Dict`, 
                    Validators, and Fields.
-    :keyword type: A type of sequence object.
+    :keyword type: A type of sequence object of validation target.
                    
                    Default is :obj:`list`.
     """
@@ -217,7 +219,6 @@ class Seq(StructureRule):
             >>> assert rule[1] == Equal('y')
             >>> rule.insert(Equal('z'), 0)
             >>> assert rule[0] == Equal('z')
-            >>> 
         """
         if ident is None:
             self.rules.append(rule)
@@ -275,11 +276,11 @@ class PackAdapter(validators.ValueAdapter):
 class Dict(StructureRule):
     """Dictionary of rules.
     
-    :param *rules: Dict of rules.
+    :param \*rules: Dict of rules.
                    
                    Rules are :class:`~structures.Seq`, 
                    :class:`~structures.Dict`, Validators, and Fields.
-    :param **kwrules: Rules by keyword argument.
+    :param \*\*kwrules: Rules by keyword argument.
                       
                       Argument value is same as `*rules`.
     :keyword __is_ignore_extra: If this keyword argument is :obj:`True`, 

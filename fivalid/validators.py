@@ -479,7 +479,7 @@ class Split(Validator):
         >>> model_number('HVC-002')
         validators.InvalidValueError: 002 is not equal to 001
     
-    :param *validators: Validator for splitted values.
+    :param \*validators: Validator for splitted values.
                         
                         Number of *validators* have to same as 
                         number of part of splited values.
