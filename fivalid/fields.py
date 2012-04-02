@@ -48,28 +48,20 @@ class BaseField(object):
         
         :attr:`BaseField.converter` is :func:`converters.unicode_converter` by default.
     
-    `default`
-        Default value.
-        If missing validatee value, to convert and return this value.
-    
-    `required`
-        Required field flag.
-        If this argument is *True* and default value is missing,
-        raise :exc:`RequiredError`.
-    
-    `empty_value`
-        Criterion value of *empty value*.
-        
-        If the same as given value as `empty_value` when validate one, 
-        *given value* is treats as *empty*.
-    
-    `validator`
-        If this argument was given, to replace default validator by one.
-        
-        A *instance* of subclass of :class:`~validators.ValidatorBaseInterface`.
-    
-    `converter`
-        If this argument was given, to replace default converter by one.
+    :param default: Default value.
+                    
+                    If missing validatee value, to convert and return this value.
+    :param required: Required field flag.
+                     
+                     If this argument is *True* and default value is missing, 
+                     :exc:`RequiredError` is raised.
+    :param empty_value: Criterion value of *empty value*.
+                        
+                        If the same as given value as `empty_value` when validate one, 
+                        *given value* is treats as *empty*.
+    :param validator: If this argument was given, to replace default validator by one.
+    :type validator: A *instance* of subclass of :class:`~validators.ValidatorBaseInterface`.
+    :param converter: If this argument was given, to replace default converter by one.
     """
 
     validator = None

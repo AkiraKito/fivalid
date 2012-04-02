@@ -15,10 +15,11 @@ class StructuredFields(object):
     
     Rule (Field and Validator) should also structured.
     
-    Rule is based on :class:`Dict` and :class:`Seq`. 
-    :class:`Dict` is :obj:`dict`, :class:`Seq` is sequence types else.
+    Rule is based on :class:`~structures.Dict` and :class:`~structures.Seq`. 
+    :class:`~structures.Dict` is correspond to :obj:`dict`, 
+    :class:`~structures.Seq` is correspond to sequence types else.
     
-    Leaf node of the rule structure have to set Field or Validator.
+    *Leaf node* of the rule structure have to set *Field* or *Validator*.
     
     usage:
         >>> import validators
@@ -163,7 +164,8 @@ from itertools import cycle, count
 class Seq(StructureRule):
     """Sequence of rules.
     
-    Get a rule in the order they were given at one time, and endless repeat the pattern.:
+    Get a rule in the order they were given at one time, 
+    and endless repeat the pattern.:
         >>> rule = Seq(Number(), String())
         >>> for i in range(4):
         ...   type(rule[i])
@@ -174,13 +176,11 @@ class Seq(StructureRule):
         <class 'fivalid.validators.String'>
         >>> 
     
-    `*rules`
-        :class:`Seq`, :class:`Dict`, 
-        Validators, and Fields.
-    `**options`
-        `type`
-            A type of sequence object. 
-            Default is :obj:`list`.
+    :param *rules: :class:`~structures.Seq`, :class:`~structures.Dict`, 
+                   Validators, and Fields.
+    :keyword type: A type of sequence object.
+                   
+                   Default is :obj:`list`.
     """
 
     def __init__(self, *rules, **options):
@@ -246,7 +246,8 @@ class Seq(StructureRule):
         :param ident: Identifier of rule that accepts integer.
         :return: A rule.
         :rtype: If leaf node of data, return Validator or Field object.
-                Otherwise, return :class:`Seq` or :class:`Dict`.
+                Otherwise, return :class:`~structures.Seq` 
+                or :class:`~structures.Dict`.
         """
         try:
             ident = int(ident)
@@ -274,18 +275,17 @@ class PackAdapter(validators.ValueAdapter):
 class Dict(StructureRule):
     """Dictionary of rules.
     
-    `*rules`
-        Dict of rules.
-        
-        Rules are :class:`Seq`, :class:`Dict`, 
-        Validators, and Fields.
-    `**kwrules`
-        Rules by keyword argument.
-        
-        Argument value is same as `*rules`.
-    `__is_ignore_extra=False`
-        If this option is True, to ignore extra data 
-        when find unexpected key in validatee structured data.
+    :param *rules: Dict of rules.
+                   
+                   Rules are :class:`~structures.Seq`, 
+                   :class:`~structures.Dict`, Validators, and Fields.
+    :param **kwrules: Rules by keyword argument.
+                      
+                      Argument value is same as `*rules`.
+    :keyword __is_ignore_extra: If this keyword argument is :obj:`True`, 
+                                to ignore extra data 
+                                when find unexpected key 
+                                in validatee structured data.
     """
     
     def __init__(self, *rules, **kwrules):
@@ -308,7 +308,7 @@ class Dict(StructureRule):
         
         :param key: Rule identifier.
         :return: A rule.
-        :rtype: Same as :meth:`Dict.get`.
+        :rtype: Same as :meth:`~structures.Dict.get`.
         """
         if key not in self.rules:
             raise KeyError(key)
@@ -332,7 +332,8 @@ class Dict(StructureRule):
         :param ident: Key of rule dictionary.
         :return: A rule.
         :rtype: If rule is leaf node of data, return Validator or Field object.
-                Otherwise, return :class:`Seq` or :class:`Dict`.
+                Otherwise, return :class:`~structures.Seq` 
+                or :class:`~structures.Dict`.
         """
         return self.rules.get(ident, validators.Failure())
 
