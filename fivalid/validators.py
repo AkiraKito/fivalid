@@ -216,13 +216,16 @@ class Number(Validator):
     def validate(self, value):
         """Validate the value.
 
-        :param value: String of a number.
+        :param value: A number.
+        :type value: Accepted type of :func:`float`.
         :raise InvalidValueError: `value` is invalid.
         """
         try:
             value = float(value)
         except ValueError, e:
             raise InvalidValueError(e)
+        except TypeError, e:
+            raise InvalidTypeError(e)
         if self.max is not None:
             if not (value <= self.max):
                 raise InvalidValueError('over max')

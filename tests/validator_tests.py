@@ -88,6 +88,7 @@ def number_test():
     suc(v, 1.33)
     suc(v, '3.1415')
     err(v, 'ab', InvalidValueError)
+    err(v, dict(), InvalidTypeError)
 
     vmin = Number(min=0)
     suc(vmin, 0)
