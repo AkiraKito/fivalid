@@ -293,11 +293,11 @@ class Dict(StructureRule):
     """
     
     def __init__(self, *rules, **kwrules):
-        is_ignore_extra = kwrules.pop('__is_ignore_extra', False)
+        self.is_ignore_extra = kwrules.pop('__is_ignore_extra', False)
         rules = dict(*rules, **kwrules)
         super(Dict, self).__init__(rules, type=dict)
         self.rules = self.rules[0]  # unpack tuple
-        if not is_ignore_extra:
+        if not self.is_ignore_extra:
             self.data_validator = \
                 validators.All(self.data_validator,
                     PackAdapter(self.rules.keys(),
@@ -320,6 +320,25 @@ class Dict(StructureRule):
 
     def __setitem__(self, key, value):
         self.rules[key] = value
+        self._fix_data_validator()
+    
+    def __delitem__(self, key):
+        super(Dict, self).__delitem__(key)
+        self._fix_data_validator()
+
+    def _fix_data_validator(self):
+        if not self.is_ignore_extra:
+            def get_pa():
+                for index, validator in \
+                        enumerate(self.data_validator.validators):
+                    if isinstance(validator, PackAdapter):
+                        return (index, validator)
+                return (None, None)
+            index, pack_adapter = get_pa()
+            assert pack_adapter is not None
+            # apply modified rules
+            pack_adapter.rules = self.rules
+            self.data_validator.validators[index] = pack_adapter
 
     def insert(self, rule, ident):
         """Update and add rule."""

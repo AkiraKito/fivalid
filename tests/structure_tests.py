@@ -9,7 +9,7 @@ from fields import BaseField, RequiredError
 from validators import (
     Type, Equal, Number, String,
     Any, All, Failure, ValueAdapter,
-    ValidationError
+    ValidationError, InvalidValueError, InvalidTypeError
 )
 from converters import int_converter
 from  structures import Seq, Dict, StructuredFields
@@ -186,6 +186,20 @@ class DictRuleTest(TestCase):
             return rule['a']
         self.assertRaises(KeyError, x)
         assert rule['b'] == Equal('aaa')
+
+    def test_modify_rule(self):
+        rule = Dict(a=String()) # init without "ignore extra data" flag
+        rule({'a': 'foo'})
+        self.assertRaises(
+            InvalidValueError, rule, {'a': 'foo', 'b': 'bar'})
+        
+        rule['b'] = Equal('bar')
+        rule({'a': 'foo', 'b': 'bar'})
+
+        del rule['a']
+        rule({'b': 'bar'})
+        self.assertRaises(
+            InvalidValueError, rule, {'a': 'foo', 'b': 'bar'})
 
 
 class StructuredFieldsTest(TestCase):
