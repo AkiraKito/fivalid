@@ -219,6 +219,7 @@ class Number(Validator):
         :param value: A number.
         :type value: Accepted type of :func:`float`.
         :raise InvalidValueError: `value` is invalid.
+        :raise InvalidTypeError: Type of `value` is invalid.
         """
         try:
             value = float(value)
