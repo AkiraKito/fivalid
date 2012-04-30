@@ -94,10 +94,10 @@ class StructuredFields(object):
             # rule based scan
             for ident in rule.iteridents():
                 try:
-                    data_ = data[ident]
+                    inner_data = data[ident]
                 except KeyError:
                     # data is missing key, for dict
-                    data_ = empty_value
+                    inner_data = empty_value
                 except IndexError:
                     # end of data, for other sequence
                     if len(data) == 0:
@@ -106,10 +106,13 @@ class StructuredFields(object):
                                     empty_value=empty_value)
                     break
                 add_to_obj(ident,
-                           cls.validate(data_, rule.get(ident),
+                           cls.validate(inner_data, rule.get(ident),
                                 empty_value=empty_value))
+            # create same type object of the input data
             return data.__class__(obj)
         else:
+            # leaf of container tree validation
+            # in this case, "rule" is Field or Validator
             return rule(data)
 
 
