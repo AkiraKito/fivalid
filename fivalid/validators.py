@@ -101,17 +101,17 @@ class Any(ValidatorBaseInterface):
     """OR operation for validators."""
 
     def validate(self, value):
-        first_err = None
+        err_source = None
         for validator in self.validators:
             try:
                 validator(value)
             except ValidationError, e:
-                if first_err is None:
-                    first_err = e
+                if err_source is None:
+                    err_source = validator
             else:
                 return
-        if first_err is not None:
-            raise first_err
+        if err_source is not None:
+            err_source(value)
 
 
 class ValueAdapter(ValidatorBaseInterface):
