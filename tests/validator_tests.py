@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys, os
+import unittest
 sys.path.insert(0, os.path.join('..', 'fivalid'))
 from validators import (
     ValidationError, InvalidTypeError, InvalidValueError,
@@ -37,6 +38,85 @@ def suc(validator, value):
         validator(value)
     except ValidationError, e:
         raise AssertionError(e)
+
+
+class ValidatorTraceBackInfoTest(unittest.TestCase):
+
+    def get_generator_test(self):
+        validator = String()
+        try:
+            validator(42)
+        except ValidationError, e:
+            gen = e.trace_info()
+            assert gen
+            assert hasattr(gen, '__iter__')
+            assert callable(gen.__iter__)
+            assert hasattr(gen, 'next')
+            assert callable(gen.next)
+            assert hasattr(gen, 'send')
+            assert callable(gen.send)
+            assert hasattr(gen, 'throw')
+            assert callable(gen.throw)
+            assert hasattr(gen, 'close')
+            assert callable(gen.close)
+        else:
+            raise AssertionError('ValidationError is not raised')
+
+    def check_info(self, generator, expected_info):
+        for index, info in enumerate(generator):
+            assert info['classname'] == expected_info[index]['classname'],\
+                    '%s != %s' % (info['classname'], expected_info[index]['classname'])
+            assert info['value'] == expected_info[index]['value'],\
+                    '%s != %s' % (info['value'], expected_info[index]['value'])
+            assert info['validator'] == expected_info[index]['validator'],\
+                    '%s != %s' % (info['validator'], expected_info[index]['validator'])
+    
+    def validator_info_from_exc_test(self):
+        validator = All(String(), Length(min=4))
+        validatee_value = 42
+        try:
+            validator(validatee_value)
+        except ValidationError, e:
+            expected_info = [
+                {'classname': 'All',
+                 'value': validatee_value,
+                 'validator': All(String(), Length(min=4))},
+                {'classname': 'String',
+                 'value': validatee_value,
+                 'validator': String()}
+            ]
+            self.check_info(e.trace_info(), expected_info)
+        else:
+            raise AssertionError('ValidationError is not raised')
+
+    def validator_and_structure_info_from_exc_test(self):
+        from structures import (
+            StructuredFields, Dict,
+            ExtraDataRejection, PackAdapter)
+        rule = Dict(
+            foo=All(String(), Length(min=3))
+        )
+        validator = StructuredFields(rule)
+        validatee_value = 42
+        try:
+            validator(validatee_value)
+        except ValidationError, e:
+            expected_info = [
+                {'classname': 'Dict',
+                 'value': validatee_value,
+                 'validator': rule},
+                {'classname': 'All',
+                 'value': validatee_value,
+                 'validator': All(
+                     Type(dict),
+                     PackAdapter(['foo'], ExtraDataRejection()))},
+                {'classname': 'Type',
+                 'value': validatee_value,
+                 'validator': Type(dict)}
+            ]
+            self.check_info(e.trace_info(), expected_info)
+        else:
+            raise AssertionError('ValidationError is not raised')
 
 
 def no_nest_Any_test():

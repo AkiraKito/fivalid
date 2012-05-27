@@ -29,6 +29,7 @@ Exceptions
 .. autoexception:: fields.RequiredError
 
 .. autoexception:: validators.ValidationError
+    :members:
 
 .. autoexception:: validators.InvalidValueError
     

@@ -4,11 +4,65 @@ import pickle
 import hashlib
 import re
 import itertools
+import inspect
 
 
 class ValidationError(BaseException):
     """Error occurred while validation."""
-    pass
+    
+    def trace_info(self):
+        """Get generator that exception stack trace info of validator.
+        
+        This generator will generate info about the validator or 
+        the rule(subclass of :class:`~structures.StructureRule`) that exception is raised.
+        
+        The type of info is :class:`dict`, and keys are:
+        
+        classname
+            Class name of validator.
+        
+        args
+            Validator's call arguments info 
+            (format by :func:`inspect.formatargvalues`).
+        
+        value
+            Validatee value.
+        
+        validator
+            Validator object.
+        
+        .. note::
+            The info is generated in order from the caller.
+        
+        :return: Generator object.
+        """
+        frame_records = inspect.trace()
+        processed = set()
+        for frame_record in frame_records:
+            arginfo = inspect.getargvalues(frame_record[0])
+            local = arginfo[3]
+            if len(arginfo[0]) < 1:
+                continue
+            validator = local[arginfo[0][0]]   # maybe validator's self
+            expected_types = [ValidatorBaseInterface]
+            try:
+                from structures import StructureRule
+            except:
+                pass
+            else:
+                expected_types.append(StructureRule)
+            if not isinstance(validator, tuple(expected_types)):
+                continue
+            if id(validator) in processed:
+                continue
+            info_dict = {
+                'classname': validator.__class__.__name__,
+                'args': inspect.formatargvalues(*arginfo),
+                'value': local[arginfo[0][1]],
+                'validator': validator
+            }
+            yield info_dict
+            processed.add(id(validator))
 
 class InvalidValueError(ValidationError):
     """Value is invalid."""
