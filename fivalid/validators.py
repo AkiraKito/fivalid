@@ -505,7 +505,9 @@ class Type(Validator):
 
     def validate(self, value):
         if not isinstance(value, self.value_type):
-            raise InvalidTypeError('not same type')
+            raise InvalidTypeError(
+                    '%s and %s are not same type' % \
+                    (type(value), self.value_type))
 
 
 class Length(Validator):
