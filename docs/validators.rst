@@ -2,8 +2,16 @@
 Validators
 ==========
 .. autoclass:: validators.Validator
-    :members: __call__, validate
+    :members: __call__, __eq__, __ne__, validate
     :undoc-members:
+
+    .. attribute:: ident
+        
+        Validator's identifier getter method (decoreted by :func:`property`).
+        
+        It is string that generated from Validator's all arguments.
+        
+        It is used by :meth:`~validators.Validator.__eq__` and :meth:`~validators.Validator.__ne__`.
 
 .. autoclass:: validators.All
 
