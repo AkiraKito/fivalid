@@ -398,6 +398,7 @@ class Regex(Validator):
         
         :raises TypeError: `regexp` is not string.
         """
+        super(Regex, self).__init__(regexp, is_match=is_match, flags=flags)
         if isinstance(regexp, basestring):
             self.regexp = regexp
         else:

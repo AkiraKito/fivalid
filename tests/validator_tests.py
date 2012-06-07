@@ -268,6 +268,13 @@ def regex_test():
     vsf = Regex('hopi', flags=set('lmsuix'))
     suc(vsf, 'hopi')
 
+    assert Regex('foo') == Regex('foo')
+    assert Regex('foo') != Regex('bar')
+    assert Regex('foo') == Regex('foo', is_match=True)
+    assert Regex('foo') != Regex('foo', is_match=False)
+    assert Regex('foo', flags='i') == Regex('foo', flags='i')
+    assert Regex('foo', flags='iu') != Regex('foo', flags='i')
+
 
 def allowtype_test():
     err(AllowType, [], ValueError)
