@@ -39,7 +39,8 @@
         >>> print lightness
         None
     
-    data structure validation (same as the input data structure will be return, but *all values* are :obj:`None`. because it's **only for the purpose of validation**)::
+    data structure validation (same as the input data structure will be return, 
+    but *all values* are :obj:`None`. because it's **only for the purpose of validation**)::
         
         >>> from fivalid import StructuredFields, Dict
         >>> from fivalid.validators import String, Length, All, Flag
