@@ -102,8 +102,11 @@ class StructuredFields(object):
                     # end of data, for other sequence
                     if len(data) == 0:
                         # empty container
-                        cls.validate(empty_value, rule.get(ident),
-                                    empty_value=empty_value)
+                        inner_rule = rule.get(ident)
+                        if getattr(inner_rule, 'required', False):
+                            # will be check Field's "required" flag
+                            cls.validate(empty_value, inner_rule,
+                                         empty_value=empty_value)
                     break
                 add_to_obj(ident,
                            cls.validate(inner_data, rule.get(ident),
@@ -168,6 +171,19 @@ class StructureRule(object):
 
 from itertools import cycle, count
 
+class NotEmptySequence(validators.Length):
+
+    def __init__(self):
+        super(NotEmptySequence, self).__init__(min=1)
+
+    def validate(self, value):
+        try:
+            super(NotEmptySequence, self).validate(value)
+        except validators.InvalidValueError:
+            # replace error message
+            raise validators.InvalidValueError(
+                    'the sequence must not be empty')
+
 class Seq(StructureRule):
     """Sequence of rules.
     
@@ -187,12 +203,38 @@ class Seq(StructureRule):
     :keyword type: A type of sequence object of validation target.
                    
                    Default is :obj:`list`.
+    :keyword __disallow_empty: If this keyword argument is :obj:`True`, 
+                               do not allow empty sequence 
+                               as validatee structured data.
+                               
+                               Default is :obj:`False`.
+                               
+                               When used with :attr:`fields.BaseField.required` 
+                               flag (to instantiate :class:`fields.BaseField` 
+                               (or subclass) with *required* keyword argument; 
+                               e.g. *Field(required=True)* ), 
+                               the `__disallow_empty` is given priority.
+                               
+                               If `__disallow_empty` is :obj:`False` (default) 
+                               and 
+                               :attr:`fields.BaseField.required` is :obj:`True`, 
+                               will be check "required" by the *Field*.
+    :raises InvalidValueError: If :attr:`Seq.disallow_empty` is :obj:`True`, 
+                               input data is empty sequence.
+                               
+                               Otherwise, same as :class:`StructureRule`.
     """
 
     def __init__(self, *rules, **options):
         super(Seq, self).__init__(type=options.pop('type', list),
                                   *rules)
         self.rules = list(self.rules)
+        self.disallow_empty = options.pop('__disallow_empty', False)
+        if self.disallow_empty:
+            # do not allow empty sequence as input data
+            self.data_validator = validators.All(
+                    NotEmptySequence(),
+                    self.data_validator)
 
     def __iter__(self):
         """Iterator of rule objects."""

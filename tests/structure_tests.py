@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from nose.tools import nottest
+from nose.tools import nottest, eq_, ok_
 
 import sys, os
 sys.path.insert(0, os.path.join('..', 'fivalid'))
 from fields import BaseField, RequiredError
 from validators import (
-    Type, Equal, Number, String,
+    ValidatorBaseInterface,
+    Type, Equal, Number, String, Regex,
     Any, All, Failure, ValueAdapter,
     ValidationError, InvalidValueError, InvalidTypeError
 )
@@ -24,7 +25,7 @@ class SequenceRuleTest(TestCase):
         rule = Seq(Equal('X'), type=list)
         
         assert hasattr(rule, 'data_validator')
-        assert isinstance(rule.data_validator, Type)
+        assert isinstance(rule.data_validator, ValidatorBaseInterface)
         assert rule.data_validator([]) == None
         self.assertRaises(ValidationError, rule.data_validator, {})
         
@@ -292,15 +293,35 @@ class StructuredFieldsTest(TestCase):
                           rule)
 
     def test_empty_seq(self):
+        # allow empty sequence by default
         rule = Seq(
             Number(max=5),
             Seq(
                 String()
             )
         )
+        data = [
+            3, [], # allow empty list or
+            2, ['a', 'b']    # list of string
+        ]
+        self.validate(data, rule)
+        
+        # disallow empty sequence
+        rule2 = Seq(
+            Number(max=5),
+            Seq(
+                String(),
+                __disallow_empty=True
+            ),
+            __disallow_empty=True
+        )
         self.assertRaises(ValidationError,
                           self.validate,
-                          [3, []], rule)
+                          [], rule2)
+        self.assertRaises(ValidationError,
+                          self.validate,
+                          data, rule2)
+
 
     def test_validate_flat_seq(self):
         # flat sequence
@@ -417,5 +438,47 @@ class NestedStructuredFieldTests(TestCase):
             assert 'followers' in user
             assert isinstance(user['followers'], list), i
             assert user['followers'] == data[i]['followers']
+
+    def test_list_of_dict(self):
+        # like config default
+        default_ip_addrs = [
+            # {'type': 'private', 'addr': '192.168.0.0'} ...
+        ]
+        
+        base_rule = Dict({
+            'type': BaseField(
+                validator=Any(Equal('private'), Equal('global'))),
+            'addr': BaseField(
+                # IPv4 regexp
+                validator=Regex(('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}'
+                                 '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')))
+        })
+        # allow empty ip addr list
+        allow_empty_rule = Seq(base_rule)
+        disallow_empty_rule = Seq(base_rule, __disallow_empty=True)
+
+        # input config data
+        data = [
+            {'type': 'private', 'addr': '10.0.0.0'},
+            {'type': 'private', 'addr': '192.168.0.0'},
+            {'type': 'global', 'addr': '82.94.164.162'},
+        ]
+
+        # default data validation
+        defaults = StructuredFields.validate(
+                default_ip_addrs, allow_empty_rule)
+        ok_(isinstance(defaults, list))
+        eq_(len(defaults), 0)
+        # default data validation with disallow empty flag
+        self.assertRaises(ValidationError,
+                          StructuredFields.validate,
+                          default_ip_addrs, disallow_empty_rule)
+
+        # updated data validation
+        defaults.extend(data)
+        config = StructuredFields.validate(
+                defaults, allow_empty_rule)
+        ok_(isinstance(config, list))
+        eq_(len(config), 3)
 
 
